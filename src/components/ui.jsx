@@ -5,11 +5,12 @@ export const Button = ({
   primary = false,
   quiet = false,
   link = false,
+  className = "",
   ...props
 }) => (
   <button
     type="button"
-    className={`${primary ? "primary" : quiet ? "quiet" : link ? "link" : ""}`}
+    className={`${primary ? "primary" : quiet ? "quiet" : link ? "link" : ""} ${className}`}
     onClick={onClick}
     {...props}
   >
@@ -121,10 +122,23 @@ export function Heading({ title, subtitle, actions }) {
   return (
     <div className="pw-heading">
       <div>
-        <h1>{title}</h1>
+        <h1 tabIndex={-1}>{title}</h1>
         {subtitle && <p className="pw-muted">{subtitle}</p>}
       </div>
       {actions && <div className="pw-actions">{actions}</div>}
     </div>
   );
+}
+
+// One consistent icon set for the shared navigation; labels remain visible.
+const iconPaths = {
+  overview: "M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9",
+  spaces: "M3 3h18v18H3zM3 11h9V3M12 11v10M12 16h9",
+  catalogue: "M4 5h16v15H4zM8 5V3h8v2M8 10h8M8 14h8",
+  issues: "M12 3 2 21h20L12 3ZM12 9v5M12 17v1",
+  history: "M3 11a9 9 0 1 1 2 7M3 4v7h7M12 7v6l4 2",
+  search: "M21 21l-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0",
+};
+export function Icon({ name }) {
+  return <svg className="pw-icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={iconPaths[name]} /></svg>;
 }

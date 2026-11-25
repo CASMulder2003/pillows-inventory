@@ -261,7 +261,10 @@ export function Spaces() {
                 return (
                   <tr
                     key={s.id}
-                    className={selected.includes(s.id) ? "selected" : ""}
+                    className={`pw-clickable-row ${selected.includes(s.id) ? "selected" : ""}`}
+                    onClick={(e) => {
+                      if (!e.target.closest("button, a, input, select, .select-col")) openSpace(s.id);
+                    }}
                   >
                     <td className="select-col">
                       <Checkbox

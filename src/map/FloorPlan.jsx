@@ -69,7 +69,8 @@ export function FloorPlan({
   const spaces = data.spaces.filter((s) => s.hotelId === currentHotel),
     floorSpaces = spaces.filter((s) => s.floor === level.id);
   const plan = buildFloorPlan(floorSpaces, level, currentHotel);
-  const [hideList, setHideList] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const cameraKey = `${currentHotel}/${level.buildingId}/${level.id}/${compact ? "compact" : "full"}`;
   const {
     stageRef,
@@ -110,7 +111,8 @@ export function FloorPlan({
   const pageCount = Math.max(1, Math.ceil(matches.length / pageSize)),
     safePage = Math.min(page, pageCount - 1),
     shown = matches.slice(safePage * pageSize, (safePage + 1) * pageSize);
-  const showList = !!q || (!compact && !hideList);
+  const showList = listOpen || (!!q && searchOpen);
+  const focusedSpace = floorSpaces.find((s) => s.id === focusId);
   const buildings = [
     ...new Map(levels.map((l) => [l.buildingId, l.buildingLabel])).entries(),
   ];
@@ -129,6 +131,10 @@ export function FloorPlan({
     onFloor(space.floor);
     onFocus(space.id);
     if (space.floor === level.id) focusShape(space.id);
+    // Locating a result reveals the map without changing the search or page height.
+    setListOpen(false);
+    setSearchOpen(false);
+    stageRef.current?.focus({ preventScroll: true });
   }
   function changeFloor(id) {
     onFloor(id);
@@ -139,6 +145,7 @@ export function FloorPlan({
     onQuery("");
     onFocus(null);
     onPage(0);
+    setSearchOpen(false);
   }
   const onCurrent = selected.filter((id) =>
     floorSpaces.some((s) => s.id === id),
@@ -152,17 +159,19 @@ export function FloorPlan({
           <strong>{level.label}</strong>
           <span>
             {buildings.length > 1 ? `${level.buildingLabel} · ` : ""}
-            {plan.sourceBased ? "Architectural floor plan" : "Illustrative layout"}
+            {floorSpaces.length} spaces
           </span>
         </div>
         <div className="pw-plan-search">
           <input
             type="search"
             aria-label="Search floor plan"
-            placeholder="Find a room or space · all levels"
+            placeholder="Find a room or space…"
+            onFocus={() => q && setSearchOpen(true)}
             value={query}
             onChange={(e) => {
               onQuery(e.target.value);
+              setSearchOpen(true);
               onFocus(null);
               onPage(0);
             }}
@@ -199,11 +208,16 @@ export function FloorPlan({
               Fit selection
             </Button>
           )}
-          {!compact && !q && (
-            <Button onClick={() => setHideList((x) => !x)}>
-              {hideList ? "Show list" : "Hide list"}
-            </Button>
-          )}
+          <Button
+            aria-label="Show spaces on this plan"
+            aria-expanded={showList}
+            onClick={() => {
+              setListOpen(!showList);
+              setSearchOpen(!showList);
+            }}
+          >
+            Spaces
+          </Button>
         </div>
         {buildings.length > 1 && (
           <div
@@ -246,186 +260,206 @@ export function FloorPlan({
           ))}
         </div>
       </div>
-      {showList && (
-        <div className="pw-plan-results">
-          <small role="status">
-            {q
-              ? matches.length
-                ? `${matches.length} matching ${matches.length === 1 ? "space" : "spaces"}`
-                : "No matching spaces. Try a room number or “corridor”."
-              : "Spaces on this level"}
-          </small>
-          {shown.map((s) => (
-            <div
-              className={
-                focusId === s.id ? "pw-plan-result located" : "pw-plan-result"
-              }
-              key={s.id}
-            >
-              <Button
-                quiet
-                aria-label={`Show ${s.name} on plan`}
-                onClick={() => reveal(s)}
-              >
-                <strong>{s.name}</strong>
-                <small>
-                  {q
-                    ? labelFor(s)
-                    : focusId === s.id
-                      ? "Shown on plan"
-                      : "Show on plan"}
-                </small>
-              </Button>
-              <Button
-                link
-                aria-label={`Open ${s.name} record`}
-                onClick={() => openRoom(s.id)}
-              >
-                Open
-              </Button>
+      <div className={`pw-plan-body ${showList ? "has-results" : ""}`} style={{ "--pw-stage-height": `${height}px` }}>
+        {showList && (
+          <div className="pw-plan-results" aria-label="Spaces on the plan">
+            <div className="pw-plan-results-heading">
+            <strong role="status">
+              {q
+                ? matches.length
+                  ? `${matches.length} matching ${matches.length === 1 ? "space" : "spaces"}`
+                  : "No matching spaces. Try a room number or “corridor”."
+                : `${floorSpaces.length} spaces on this level`}
+            </strong>
+            <Button quiet aria-label="Close space results" onClick={() => {
+              setListOpen(false);
+              setSearchOpen(false);
+            }}>×</Button>
             </div>
-          ))}
-          {pageCount > 1 && (
-            <div className="pw-map-pagination">
-              <small>
-                {safePage * pageSize + 1}–
-                {Math.min((safePage + 1) * pageSize, matches.length)} of{" "}
-                {matches.length}
-              </small>
-              <div className="pw-actions">
+            {shown.map((s) => (
+              <div
+                className={
+                  focusId === s.id ? "pw-plan-result located" : "pw-plan-result"
+                }
+                key={s.id}
+              >
                 <Button
-                  aria-label="Previous spaces"
-                  disabled={safePage === 0}
-                  onClick={() => onPage(safePage - 1)}
+                  quiet
+                  aria-label={`Open ${s.name} record`}
+                  onClick={() => openRoom(s.id)}
                 >
-                  Previous
+                  <strong>{s.name}</strong>
+                  <small>
+                    {q ? labelFor(s) : s.type}
+                  </small>
                 </Button>
                 <Button
-                  aria-label="Next spaces"
-                  disabled={safePage >= pageCount - 1}
-                  onClick={() => onPage(safePage + 1)}
+                  quiet
+                  className="pw-locate-space"
+                  aria-label={`Locate ${s.name} on plan`}
+                  title="Locate on plan"
+                  onClick={() => reveal(s)}
                 >
-                  Next
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+                    <circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2" />
+                    <path d="M12 1v4m0 14v4M1 12h4m14 0h4" />
+                  </svg>
                 </Button>
               </div>
+            ))}
+            {pageCount > 1 && (
+              <div className="pw-map-pagination">
+                <small>
+                  {safePage * pageSize + 1}–
+                  {Math.min((safePage + 1) * pageSize, matches.length)} of{" "}
+                  {matches.length}
+                </small>
+                <div className="pw-actions">
+                  <Button
+                    aria-label="Previous spaces"
+                    disabled={safePage === 0}
+                    onClick={() => onPage(safePage - 1)}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    aria-label="Next spaces"
+                    disabled={safePage >= pageCount - 1}
+                    onClick={() => onPage(safePage + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        <div
+          ref={stageRef}
+          className={`pw-plan-stage ${clipped ? "is-pannable" : ""}`}
+          tabIndex={0}
+          role="region"
+          aria-label="Interactive floor plan. Use plus and minus to zoom, arrow keys to pan, Escape to fit."
+          style={{ touchAction: clipped ? "none" : "pan-y" }}
+          {...stageEvents}
+        >
+          {focusedSpace && (
+            <div className="pw-map-focus">
+              <Button quiet onClick={() => openRoom(focusedSpace.id)}>
+                <strong>{focusedSpace.name}</strong><small>View contents & finishes</small>
+              </Button>
+              <Button quiet aria-label="Clear located space" onClick={() => onFocus(null)}>×</Button>
             </div>
           )}
+          <svg
+            ref={drawingRef}
+            style={{ height }}
+            viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
+            role="group"
+            aria-label={`${level.buildingLabel}, ${level.label}. ${plan.sourceBased ? "Simplified from the supplied architectural floor plan." : "Illustrative test layout."} Clickable spaces.`}
+          >
+            <title>{`${level.label} · ${level.buildingLabel}`}</title>
+            <desc>
+              {plan.sourceBased
+                ? "Room boundaries follow the supplied architectural drawing. Construction details are omitted. Open a space to view its catalogue."
+                : "Illustrative room shapes for testing the catalogue."}
+            </desc>
+            <g className="pw-plan-context" aria-hidden="true">
+              {(plan.context || []).map((context, index) => (
+                <g key={index}>
+                  <path
+                    d={context.path}
+                    fillRule="evenodd"
+                    className={`pw-plan-context-${context.kind}`}
+                  />
+                  {context.label && Number.isFinite(context.x) && Number.isFinite(context.y) && (
+                    <text x={context.x} y={context.y} fontSize={font * 0.9}>
+                      {context.label}
+                    </text>
+                  )}
+                </g>
+              ))}
+            </g>
+            <path d={plan.outline} className="pw-plan-wall" fillRule="evenodd" />
+            {plan.shapes.map((g) => {
+              const s = floorSpaces.find((s) => s.id === g.spaceId);
+              if (!s) return null;
+              const issue = data.issues.some(
+                (i) => i.status !== "Resolved" && i.spaceId === s.id,
+              );
+              const labelFont = plan.sourceBased ? font * 0.9 : font;
+              const lines = roomLabel(g, s, labelFont, camera.zoom, plan.sourceBased);
+              return (
+                <a
+                  key={s.id}
+                  href={"#" + s.id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (canActivateSpace())
+                      (selectMode ? onSelect : openRoom)(s.id);
+                  }}
+                  aria-label={`${selectMode ? "Select" : "Open"} ${s.name} on plan${selected.includes(s.id) ? ", selected" : ""}`}
+                  className="pw-plan-space"
+                >
+                  <title>{`${s.name} · ${s.type}${issue ? " · Outstanding issue" : ""}`}</title>
+                  <path
+                    d={g.path}
+                    fillRule="evenodd"
+                    className={`pw-plan-room ${plan.sourceBased ? `pw-plan-room-${spaceCategory(s)}` : ""} ${selected.includes(s.id) ? "selected" : ""} ${focusId === s.id ? "located" : q && matches.some((m) => m.id === s.id) ? "matched" : ""}`}
+                  />
+                  {lines.length > 0 && (
+                    <text
+                      className={`pw-plan-label ${s.type === "Guest room" ? "pw-plan-room-number" : ""}`}
+                      x={g.x}
+                      y={g.y - ((lines.length - 1) * labelFont * 1.15) / 2}
+                      fontSize={labelFont}
+                      dominantBaseline="central"
+                      aria-hidden="true"
+                    >
+                      {lines.map((line, index) => (
+                        <tspan key={index} x={g.x} dy={index ? labelFont * 1.15 : 0}>
+                          {line}
+                        </tspan>
+                      ))}
+                    </text>
+                  )}
+                  {issue && (
+                    <text
+                      className="pw-plan-label pw-plan-alert"
+                      x={g.x + font * 2}
+                      y={g.y - font * 1.2}
+                      fontSize={font}
+                      aria-hidden="true"
+                    >
+                      !
+                    </text>
+                  )}
+                </a>
+              );
+            })}
+            {camera.zoom < 1.8 &&
+              (plan.labels || []).map((l, i) => (
+                <text
+                  key={i}
+                  className="pw-plan-label pw-landmark"
+                  x={l.x}
+                  y={l.y}
+                  fontSize={font}
+                >
+                  {l.text}
+                </text>
+              ))}
+          </svg>
+          <Minimap
+            plan={plan}
+            camera={camera}
+            viewport={viewport}
+            width={width}
+            visible={clipped}
+            onCenter={centerAt}
+            onPan={pan}
+          />
         </div>
-      )}
-      <div
-        ref={stageRef}
-        className={`pw-plan-stage ${clipped ? "is-pannable" : ""}`}
-        style={{ touchAction: clipped ? "none" : "pan-y" }}
-        {...stageEvents}
-      >
-        <svg
-          ref={drawingRef}
-          style={{ height }}
-          viewBox={`${view.x} ${view.y} ${view.width} ${view.height}`}
-          role="group"
-          aria-label={`${level.buildingLabel}, ${level.label}. ${plan.sourceBased ? "Simplified from the supplied architectural floor plan." : "Illustrative test layout."} Clickable spaces.`}
-        >
-          <title>{`${level.label} · ${level.buildingLabel}`}</title>
-          <desc>
-            {plan.sourceBased
-              ? "Room boundaries follow the supplied architectural drawing. Construction details are omitted. Open a space to view its catalogue."
-              : "Illustrative room shapes for testing the catalogue."}
-          </desc>
-          <g className="pw-plan-context" aria-hidden="true">
-            {(plan.context || []).map((context, index) => (
-              <g key={index}>
-                <path
-                  d={context.path}
-                  fillRule="evenodd"
-                  className={`pw-plan-context-${context.kind}`}
-                />
-                {context.label && Number.isFinite(context.x) && Number.isFinite(context.y) && (
-                  <text x={context.x} y={context.y} fontSize={font * 0.9}>
-                    {context.label}
-                  </text>
-                )}
-              </g>
-            ))}
-          </g>
-          <path d={plan.outline} className="pw-plan-wall" fillRule="evenodd" />
-          {plan.shapes.map((g) => {
-            const s = floorSpaces.find((s) => s.id === g.spaceId);
-            if (!s) return null;
-            const issue = data.issues.some(
-              (i) => i.status !== "Resolved" && i.spaceId === s.id,
-            );
-            const labelFont = plan.sourceBased ? font * 0.9 : font;
-            const lines = roomLabel(g, s, labelFont, camera.zoom, plan.sourceBased);
-            return (
-              <a
-                key={s.id}
-                href={"#" + s.id}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (canActivateSpace())
-                    (selectMode ? onSelect : openRoom)(s.id);
-                }}
-                aria-label={`${selectMode ? "Select" : "Open"} ${s.name} on plan${selected.includes(s.id) ? ", selected" : ""}`}
-                className="pw-plan-space"
-              >
-                <title>{`${s.name} · ${s.type}${issue ? " · Outstanding issue" : ""}`}</title>
-                <path
-                  d={g.path}
-                  fillRule="evenodd"
-                  className={`pw-plan-room ${plan.sourceBased ? `pw-plan-room-${spaceCategory(s)}` : ""} ${selected.includes(s.id) ? "selected" : ""} ${focusId === s.id ? "located" : q && matches.some((m) => m.id === s.id) ? "matched" : ""}`}
-                />
-                {lines.length > 0 && (
-                  <text
-                    className={`pw-plan-label ${s.type === "Guest room" ? "pw-plan-room-number" : ""}`}
-                    x={g.x}
-                    y={g.y - ((lines.length - 1) * labelFont * 1.15) / 2}
-                    fontSize={labelFont}
-                    dominantBaseline="central"
-                    aria-hidden="true"
-                  >
-                    {lines.map((line, index) => (
-                      <tspan key={index} x={g.x} dy={index ? labelFont * 1.15 : 0}>
-                        {line}
-                      </tspan>
-                    ))}
-                  </text>
-                )}
-                {issue && (
-                  <text
-                    className="pw-plan-label pw-plan-alert"
-                    x={g.x + font * 2}
-                    y={g.y - font * 1.2}
-                    fontSize={font}
-                    aria-hidden="true"
-                  >
-                    !
-                  </text>
-                )}
-              </a>
-            );
-          })}
-          {camera.zoom < 1.8 &&
-            (plan.labels || []).map((l, i) => (
-              <text
-                key={i}
-                className="pw-plan-label pw-landmark"
-                x={l.x}
-                y={l.y}
-                fontSize={font}
-              >
-                {l.text}
-              </text>
-            ))}
-        </svg>
-        <Minimap
-          plan={plan}
-          camera={camera}
-          viewport={viewport}
-          width={width}
-          visible={clipped}
-          onCenter={centerAt}
-          onPan={pan}
-        />
       </div>
       <div className="pw-plan-caption">
         {plan.sourceBased && (
@@ -435,15 +469,16 @@ export function FloorPlan({
             ))}
           </div>
         )}
-        <span title={plan.sourceNote}>
-          {plan.sourceBased
-            ? `Source: ${plan.source?.drawing || "supplied architectural plan"}${plan.source?.date ? ` · ${plan.source.date}` : ""}`
-            : "Illustrative test layout"}
-        </span>
-        <span>! Outstanding issue</span>
-        {focusId && <span>Dashed outline · found space</span>}
-        {selected.length > 0 && <span>Gold fill · selected</span>}
-        <span className="pw-map-hint">{clipped ? "Drag to pan · " : ""}Ctrl + scroll to zoom</span>
+        <span className="pw-map-issue-key"><b>!</b> Outstanding issue</span>
+        <details className="pw-plan-details">
+          <summary>Plan details</summary>
+          <p>{plan.sourceBased
+            ? `${plan.source?.drawing || "Supplied architectural plan"}${plan.source?.date ? ` · ${plan.source.date}` : ""}`
+            : "Illustrative layout for testing the catalogue."}</p>
+          {plan.sourceNote && <p>{plan.sourceNote}</p>}
+          <p>Click a space to open its contents. Drag when zoomed in, or focus the map and use arrow keys. Ctrl + scroll also zooms.</p>
+          {selected.length > 0 && <p>Gold fill shows selected spaces.</p>}
+        </details>
       </div>
     </div>
   );

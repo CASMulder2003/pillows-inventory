@@ -1,6 +1,7 @@
 import { productMatches } from "../app/selectors.js";
 import {
   hotelLevels,
+  products,
   suppliers,
   productById,
   aggregate,
@@ -35,8 +36,7 @@ export function Catalogue() {
     visit,
   } = useWorkspace();
   const rows = aggregate(data, scopedIds).filter((r) => {
-    const p = productById(r.productId),
-      supplier = suppliers.find((s) => s.id === p.supplierId);
+    const p = productById(r.productId);
     return (
       (filter.kind === "all" || r.kind === filter.kind) &&
       (filter.category === "all" || p.category === filter.category) &&
@@ -69,7 +69,15 @@ export function Catalogue() {
           }
         />
       }
-      {<ScopeSummary />}
+      <ScopeSummary />
+      <div className="pw-catalogue-kinds pw-view-switch" role="group" aria-label="Catalogue type">
+        {[["all", "All items"], ["object", "Objects"], ["finish", "Paint & finishes"]].map(([kind, label]) => (
+          <Button key={kind} aria-pressed={filter.kind === kind} onClick={() => {
+            setFilter("kind", kind);
+            setFilter("category", "all");
+          }}>{label}</Button>
+        ))}
+      </div>
       <div className="pw-toolbar">
         <Field label="Search the catalogue" className="search">
           <input
@@ -79,17 +87,11 @@ export function Catalogue() {
             onChange={(e) => setFilter("query", e.target.value)}
           />
         </Field>
-        <Field label="Show">
-          <Select
-            label="Catalogue type"
-            value={filter.kind}
-            onChange={(v) => setFilter("kind", v)}
-            options={[
-              ["all", "Objects & finishes"],
-              ["object", "Objects"],
-              ["finish", "Paint & finishes"],
-            ]}
-          />
+        <Field label="Category">
+          <Select label="Catalogue category" value={filter.category} onChange={(v) => setFilter("category", v)} options={[
+            ["all", "All categories"],
+            ...[...new Set(products.filter((p) => filter.kind === "all" || p.kind === filter.kind).map((p) => p.category))].map((category) => [category, category]),
+          ]} />
         </Field>
         <Field label="Floor">
           <Select
@@ -157,7 +159,9 @@ export function Catalogue() {
           {rows.map((r) => {
             const p = productById(r.productId);
             return (
-              <tr key={p.id}>
+              <tr key={p.id} className="pw-clickable-row" onClick={(e) => {
+                if (!e.target.closest("button, a, input, select")) openProduct(p.id);
+              }}>
                 <td>
                   <ProductRecord id={p.id} onOpen={openProduct} />
                 </td>

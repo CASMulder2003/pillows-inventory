@@ -24,7 +24,7 @@ export function Minimap({
 }) {
   const [preference, setPreference] = useState(null);
   const drag = useRef(null);
-  const showOverview = preference ?? width >= 500;
+  const showOverview = preference ?? (width >= 600 && plan.shapes.length > 16);
 
   function startDrag(e) {
     if (e.button !== 0) return;
@@ -95,16 +95,17 @@ export function Minimap({
     >
       <Button
         quiet
+        aria-label={showOverview ? "Hide minimap" : "Show minimap"}
         aria-expanded={showOverview}
         onClick={() => setPreference(!showOverview)}
       >
-        {showOverview ? "Hide overview" : "Show overview"}
+        {showOverview ? "Minimise map" : "Minimap"}
       </Button>
       {showOverview && (
         <button
           type="button"
           className="pw-minimap-button"
-          aria-label="Recenter floor plan. Drag the visible area or use arrow keys."
+          aria-label="Recentre floor plan. Drag the visible area or use arrow keys."
           onClick={(e) => {
             if (e.detail === 0) onCenter(plan.width / 2, plan.height / 2);
           }}
@@ -140,7 +141,7 @@ export function Minimap({
           </svg>
         </button>
       )}
-      <div
+      {showOverview && <div
         className="pw-overview-arrows"
         role="group"
         aria-label="Pan floor plan"
@@ -155,7 +156,7 @@ export function Minimap({
             {label}
           </Button>
         ))}
-      </div>
+      </div>}
     </div>
   );
 }

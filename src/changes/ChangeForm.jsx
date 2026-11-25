@@ -73,7 +73,7 @@ export function ChangeForm() {
           subtitle={`${targets.length === 1 ? labelSpace(targets[0]) : targets.length + " selected spaces"} · ${p.name}`}
         />
       }
-      <div className="pw-form">
+      <form className="pw-form" onSubmit={(e) => { e.preventDefault(); if (!photoBusy) save(); }}>
         {linked && (
           <div className="pw-form-preview">
             <Status value={linked.status} />
@@ -84,7 +84,7 @@ export function ChangeForm() {
             <PhotoGallery ids={linked.photoIds} />
           </div>
         )}
-        {!linked && action !== "add" && (
+        {!linked && route.action !== "add" && (
           <Field label="Action">
             <Select
               label="Inventory action"
@@ -250,7 +250,7 @@ export function ChangeForm() {
           </div>
         )}
         <div className="pw-actions">
-          <Button primary disabled={photoBusy} onClick={save}>
+          <Button primary type="submit" disabled={photoBusy}>
             {action === "ordered"
               ? "Confirm ordered"
               : action === "resolve"
@@ -259,7 +259,7 @@ export function ChangeForm() {
           </Button>
           <Button onClick={back}>Cancel</Button>
         </div>
-      </div>
+      </form>
     </>
   );
 }

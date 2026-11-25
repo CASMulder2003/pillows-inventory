@@ -52,10 +52,14 @@
 
 #pillows-workspace .pw-toolbar {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
   align-items: end;
-  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid var(--pw-line);
+  border-radius: 9px;
+  background: var(--pw-wash);
+  margin-bottom: 14px;
 }
 
 #pillows-workspace .pw-toolbar .field {
@@ -78,20 +82,23 @@
 #pillows-workspace .pw-table-wrap {
   overflow-x: auto;
   min-width: 0;
+  border: 1px solid var(--pw-line);
+  border-radius: 9px;
+  background: var(--pw-paper);
 }
 
 #pillows-workspace .pw-table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 #pillows-workspace .pw-table th {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-link);
   text-align: left;
   font-weight: 700;
-  padding: 8px;
+  padding: 12px;
   border-bottom: 1px solid var(--pw-line);
   background: var(--pw-wash);
   white-space: nowrap;
@@ -99,7 +106,7 @@
 
 #pillows-workspace .pw-table td {
   height: 52px;
-  padding: 4px 8px;
+  padding: 9px 12px;
   border-bottom: 1px solid var(--pw-line);
   vertical-align: middle;
 }
@@ -123,8 +130,8 @@
 }
 
 #pillows-workspace .pw-table .link {
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 #pillows-workspace .pw-table th button {
@@ -132,7 +139,7 @@
   background: transparent;
   min-height: 20px;
   padding: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--pw-link);
 }
@@ -154,14 +161,15 @@
 
 #pillows-workspace .pw-record small {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.35;
 }
 
 #pillows-workspace .pw-thumb {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
+  border-radius: 7px;
   background: var(--pw-wash);
   border: 1px solid var(--pw-line);
   display: flex;
@@ -196,14 +204,14 @@
 }
 
 #pillows-workspace .pw-compact .pw-table td {
-  height: 44px;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  height: 54px;
+  padding-top: 7px;
+  padding-bottom: 7px;
 }
 
 #pillows-workspace .pw-compact .pw-table .pw-thumb {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 }
 
 /* Space details, applied finishes and change forms. */
@@ -222,11 +230,15 @@
 
 #pillows-workspace .pw-room-metrics {
   display: flex;
-  gap: 18px;
+  gap: 12px 24px;
   flex-wrap: wrap;
-  font-size: 12px;
+  padding: 16px;
+  border: 1px solid var(--pw-line);
+  border-radius: 8px;
+  background: var(--pw-wash);
+  font-size: 14px;
   color: var(--pw-muted);
-  margin-bottom: 16px;
+  margin: 16px 0;
 }
 
 #pillows-workspace .pw-room-metrics b {
@@ -254,15 +266,15 @@
 }
 
 #pillows-workspace .pw-issue-row p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-muted);
   margin: 3px 0 7px;
 }
 
 #pillows-workspace .pw-issue-row .pw-actions button {
-  font-size: 12px;
+  font-size: 13px;
   min-height: 28px;
-  padding: 4px 8px;
+  padding: 9px 12px;
 }
 
 #pillows-workspace .pw-finish-line {
@@ -301,14 +313,14 @@
 }
 
 #pillows-workspace .pw-surface-meta {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-muted);
   padding-left: 54px;
   margin-top: 2px;
 }
 
 #pillows-workspace .pw-surface-meta button {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 #pillows-workspace .pw-tabs {
@@ -367,7 +379,11 @@
 }
 
 #pillows-workspace .pw-form {
-  max-width: 650px;
+  max-width: 740px;
+  padding: 22px;
+  border: 1px solid var(--pw-line);
+  border-radius: 10px;
+  background: var(--pw-paper);
 }
 
 #pillows-workspace .pw-form-grid {
@@ -441,7 +457,7 @@
 }
 
 #pillows-workspace .pw-product-photos > small {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-muted);
 }
 
@@ -520,12 +536,12 @@
 #pillows-workspace .pw-photo-expanded .pw-sectionbar {
   gap: 8px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 13px;
   overflow-wrap: anywhere;
 }
 
 #pillows-workspace .pw-photo-unavailable {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-muted);
 }
 
@@ -555,7 +571,7 @@
 }
 
 #pillows-workspace .pw-photo-editor .pw-sectionbar h3 small {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   color: var(--pw-muted);
 }
@@ -563,7 +579,7 @@
 #pillows-workspace .pw-photo-editor > small {
   display: block;
   margin-top: 7px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 #pillows-workspace .pw-photo-attachments {
@@ -592,7 +608,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   max-width: 100%;
 }
@@ -601,7 +617,7 @@
   min-width: 0;
   max-width: 100%;
   width: 100%;
-  font-size: 12px;
+  font-size: 13px;
   padding: 7px;
   background: var(--pw-paper);
 }
@@ -641,7 +657,7 @@
     margin-bottom: 15px;
   }
   #pillows-workspace .pw-summary small {
-    font-size: 11px;
+    font-size: 13px;
   }
   #pillows-workspace .pw-number {
     font-size: 23px;
@@ -692,7 +708,7 @@
     gap: 7px;
   }
   #pillows-workspace .pw-table .link {
-    font-size: 12px;
+    font-size: 13px;
   }
   #pillows-workspace .pw-room-metrics {
     gap: 12px;
@@ -728,4 +744,16 @@
   #pillows-workspace .pw-photo-gallery.large .pw-photo-strip {
     max-width: 100%;
   }
+}
+
+#pillows-workspace .pw-catalogue-kinds { margin-bottom: 16px; }
+#pillows-workspace .pw-clickable-row { cursor: pointer; }
+#pillows-workspace .pw-table tbody tr:last-child td { border-bottom: 0; }
+#pillows-workspace .pw-table tbody tr:focus-within { background: var(--pw-wash); }
+#pillows-workspace .pw-surface { margin: 8px 0; padding: 14px; border: 1px solid var(--pw-line); border-radius: 8px; background: var(--pw-wash); }
+@media (max-width: 680px) {
+  #pillows-workspace .pw-toolbar { padding: 12px; gap: 12px; }
+  #pillows-workspace .pw-toolbar .field { flex: 1 1 130px; }
+  #pillows-workspace .pw-toolbar .field.search { flex-basis: 100%; }
+  #pillows-workspace .pw-form { padding: 16px; }
 }

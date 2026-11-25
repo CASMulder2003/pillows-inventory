@@ -28,12 +28,11 @@
   --pw-good: #3b644e;
   --pw-good-bg: #edf3ee;
   color: var(--pw-ink);
-  background: var(--pw-paper);
+  background: var(--pw-wash);
   font:
-    14px/1.45 Lato,
+    16px/1.5 Lato,
     Arial,
     sans-serif;
-  border: 1px solid var(--pw-line);
   text-align: left;
   isolation: isolate;
 }
@@ -79,11 +78,18 @@
 }
 
 #pillows-workspace button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   border: 1px solid var(--pw-line);
   background: var(--pw-paper);
-  padding: 7px 11px;
-  min-height: 34px;
-  border-radius: 2px;
+  padding: 9px 14px;
+  min-height: 40px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.25;
+  transition: background 120ms, border-color 120ms, box-shadow 120ms;
 }
 
 #pillows-workspace button:hover:not(:disabled) {
@@ -159,7 +165,7 @@
 
 #pillows-workspace h1 {
   font:
-    500 32px/1.15 "Canela Web",
+    500 38px/1.1 "Canela Web",
     "Cormorant Garamond",
     Georgia,
     serif;
@@ -181,7 +187,7 @@
 
 #pillows-workspace small,
 #pillows-workspace .pw-muted {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--pw-muted);
 }
 
@@ -189,7 +195,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--pw-muted);
   min-width: 0;
 }
@@ -198,7 +204,7 @@
 #pillows-workspace select,
 #pillows-workspace textarea {
   border: 1px solid var(--pw-line);
-  border-radius: 2px;
+  border-radius: 6px;
   background: var(--pw-paper);
   padding: 8px 10px;
   min-height: 36px;
@@ -230,12 +236,13 @@
 /* Header, hotel navigation and shared page layout. */
 
 #pillows-workspace .pw-header {
-  display: flex;
-  gap: 22px;
+  display: grid;
+  grid-template-columns: 170px minmax(190px, 1fr) minmax(220px, 380px) auto;
+  gap: 24px;
   align-items: center;
-  padding: 17px 22px 14px;
-  border-top: 2px solid var(--pw-gold);
-  border-bottom: 1px solid var(--pw-line);
+  padding: 20px 32px;
+  border-top: 3px solid var(--pw-gold);
+  background: var(--pw-paper);
 }
 
 #pillows-workspace .pw-brand {
@@ -256,9 +263,8 @@
 }
 
 #pillows-workspace .pw-hotel {
-  border-left: 1px solid var(--pw-gold);
-  padding-left: 20px;
-  flex: 1;
+  border-left: 1px solid var(--pw-line);
+  padding-left: 24px;
   min-width: 0;
 }
 
@@ -273,20 +279,27 @@
 
 #pillows-workspace .pw-nav {
   display: flex;
-  gap: 3px;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 0 32px;
   border-bottom: 1px solid var(--pw-line);
-  flex-wrap: wrap;
+  background: var(--pw-paper);
+  overflow-x: auto;
+  scrollbar-width: none;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 #pillows-workspace .pw-nav button {
+  flex: none;
+  gap: 9px;
   border: 0;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   border-radius: 0;
-  padding: 10px 14px;
+  padding: 14px 17px;
   background: transparent;
-  font-size: 13px;
-  letter-spacing: 0.2px;
+  font-size: 14px;
   color: var(--pw-muted);
 }
 
@@ -306,8 +319,12 @@
 }
 
 #pillows-workspace .pw-main {
-  padding: 20px 22px 22px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 28px 32px 36px;
   min-width: 0;
+  flex: 1;
 }
 
 #pillows-workspace .pw-heading {
@@ -338,13 +355,13 @@
   align-items: center;
   gap: 7px;
   flex-wrap: wrap;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--pw-muted);
   margin-bottom: 9px;
 }
 
 #pillows-workspace .pw-crumb button {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 #pillows-workspace .pw-status {
@@ -352,10 +369,10 @@
   gap: 4px;
   align-items: center;
   background: var(--pw-wash);
-  font-size: 11px;
+  font-size: 13px;
   padding: 3px 6px;
   white-space: nowrap;
-  border-radius: 2px;
+  border-radius: 6px;
 }
 
 #pillows-workspace .pw-status.open {
@@ -378,10 +395,10 @@
 }
 
 #pillows-workspace .pw-count {
-  font-size: 11px;
+  font-size: 13px;
   background: var(--pw-wash);
   padding: 1px 5px;
-  border-radius: 2px;
+  border-radius: 6px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -403,23 +420,33 @@
 }
 
 #pillows-workspace .pw-view-switch {
-  display: flex;
-  gap: 0;
+  display: inline-flex;
+  gap: 3px;
+  border: 1px solid var(--pw-line);
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--pw-wash);
 }
 
 #pillows-workspace .pw-view-switch button {
-  border-radius: 0;
-  min-width: 60px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 5px;
+  min-width: 64px;
+  min-height: 34px;
+  padding: 7px 12px;
+  color: var(--pw-muted);
 }
 
 #pillows-workspace .pw-view-switch button[aria-pressed="true"] {
-  background: var(--pw-selected);
-  border-color: var(--pw-gold);
-  color: var(--pw-link);
+  background: var(--pw-paper);
+  border-color: var(--pw-line);
+  color: var(--pw-ink);
+  box-shadow: 0 1px 3px var(--pw-soft-shadow);
 }
 
 #pillows-workspace .pw-results {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--pw-muted);
   display: flex;
   justify-content: space-between;
@@ -477,7 +504,7 @@
 }
 
 #pillows-workspace .pw-notice button {
-  font-size: 12px;
+  font-size: 14px;
   min-height: 26px;
   padding: 3px 8px;
 }
@@ -490,7 +517,7 @@
 
 #pillows-workspace .pw-definition {
   color: var(--pw-muted);
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 8px;
 }
 
@@ -503,15 +530,15 @@
 
 #pillows-workspace .pw-inline-search {
   position: relative;
-  flex: 1;
-  max-width: 330px;
   min-width: 0;
 }
 
 #pillows-workspace .pw-inline-search input {
   width: 100%;
-  font-size: 13px;
-  min-height: 33px;
+  padding-left: 38px;
+  font-size: 14px;
+  min-height: 42px;
+  background: var(--pw-wash);
 }
 
 #pillows-workspace .pw-search-results {
@@ -533,7 +560,7 @@
   width: 100%;
   text-align: left;
   border: 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 #pillows-workspace .pw-search-results small {
@@ -542,12 +569,12 @@
 
 #pillows-workspace .pw-footer {
   border-top: 1px solid var(--pw-line);
-  padding: 8px 22px;
+  padding: 14px 32px;
   display: flex;
   justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 11px;
+  align-items: start;
+  gap: 16px;
+  font-size: 13px;
   color: var(--pw-muted);
 }
 
@@ -613,7 +640,7 @@
 #pillows-workspace .pw-account-details dt {
   color: var(--pw-muted);
   margin-bottom: 6px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 #pillows-workspace .pw-account-details dd {
@@ -726,7 +753,7 @@
 
 #pillows-workspace .pw-appearance .pw-appearance-note {
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 @media (max-width: 420px) {
@@ -734,7 +761,7 @@
     flex-direction: column;
     gap: 6px;
     padding: 10px 4px;
-    font-size: 12px;
+    font-size: 14px;
   }
 }
 
@@ -752,83 +779,32 @@
   max-width: 440px;
 }
 
-/* Responsive adjustments for this stylesheet. */
+#pillows-workspace .pw-hotel select { width: 100%; max-width: 280px; background-color: var(--pw-wash); font-weight: 700; }
 
-@media (max-width: 850px) {
-  #pillows-workspace .pw-header {
-    gap: 15px;
-  }
-  #pillows-workspace .pw-hotel {
-    padding-left: 15px;
-  }
+/* One two-row header below laptop width; navigation stays in one scrollable row. */
+@media (max-width: 1050px) {
+  #pillows-workspace .pw-header { grid-template-columns: minmax(0, 1fr) auto; gap: 14px 20px; padding: 18px 24px; }
+  #pillows-workspace .pw-brand { grid-column: 1; grid-row: 1; }
+  #pillows-workspace .pw-hotel { grid-column: 2; grid-row: 1; padding-left: 0; border: 0; }
+  #pillows-workspace .pw-inline-search { grid-column: 1; grid-row: 2; }
+  #pillows-workspace .pw-account { grid-column: 2; grid-row: 2; justify-self: end; }
 }
-
 @media (max-width: 680px) {
-  #pillows-workspace .pw-brand {
-    font-size: 16px;
-    grid-column: 1/-1;
-    grid-row: 1;
-  }
-  #pillows-workspace .pw-inline-search {
-    max-width: none;
-    grid-column: 1;
-    grid-row: 3;
-  }
-  #pillows-workspace .pw-main {
-    padding: 16px;
-  }
-  #pillows-workspace .pw-nav {
-    padding: 0 8px;
-  }
-  #pillows-workspace .pw-heading {
-    align-items: start;
-  }
-  #pillows-workspace .pw-heading h1 {
-    font-size: 28px;
-  }
-  #pillows-workspace .pw-footer {
-    padding: 9px 16px;
-  }
-  #pillows-workspace .pw-header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding: 16px;
-    gap: 12px;
-  }
-  #pillows-workspace .pw-hotel {
-    grid-column: 1/-1;
-    grid-row: 2;
-    padding-left: 0;
-    border-left: 0;
-  }
-  #pillows-workspace .pw-hotel select {
-    width: 100%;
-  }
-  #pillows-workspace .pw-account {
-    grid-column: 2;
-    grid-row: 3;
-    justify-self: end;
-  }
+  #pillows-workspace .pw-header { padding: 15px 16px; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 44px; }
+  #pillows-workspace .pw-hotel { grid-column: 2 / -1; }
+  #pillows-workspace .pw-inline-search { grid-column: 1 / 3; }
+  #pillows-workspace .pw-account { grid-column: 3; }
+  #pillows-workspace .pw-brand { font-size: 17px; letter-spacing: 3px; }
+  #pillows-workspace .pw-brand small { font-size: 8px; letter-spacing: 1px; }
+  #pillows-workspace .pw-hotel select { max-width: 190px; }
+  #pillows-workspace .pw-main { padding: 22px 16px 28px; }
+  #pillows-workspace .pw-nav { padding: 0 8px; gap: 0; }
+  #pillows-workspace .pw-nav button { padding: 12px 11px; gap: 6px; font-size: 13px; }
+  #pillows-workspace .pw-nav .pw-icon { display: none; }
+  #pillows-workspace .pw-heading { align-items: start; flex-wrap: wrap; }
+  #pillows-workspace .pw-heading h1 { font-size: 32px; }
+  #pillows-workspace .pw-footer { padding: 14px 16px; flex-wrap: wrap; }
 }
-
-@media (max-width: 400px) {
-  #pillows-workspace .pw-hotel {
-    border-left: 0;
-    padding-left: 0;
-  }
-  #pillows-workspace .pw-inline-search {
-    min-width: 0;
-  }
-  #pillows-workspace .pw-nav button {
-    padding: 10px 8px;
-    font-size: 12px;
-    letter-spacing: 0;
-  }
-  #pillows-workspace .pw-heading {
-    flex-wrap: wrap;
-  }
-}
-
 @media (pointer: coarse) {
   #pillows-workspace button,
   #pillows-workspace select,
@@ -851,32 +827,6 @@
   }
 }
 
-@media (min-width: 681px) and (max-width: 960px) {
-  #pillows-workspace .pw-header {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 12px 18px;
-  }
-  #pillows-workspace .pw-brand {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  #pillows-workspace .pw-hotel {
-    grid-column: 2;
-    grid-row: 1;
-    max-width: 230px;
-  }
-  #pillows-workspace .pw-inline-search {
-    grid-column: 1;
-    grid-row: 2;
-    max-width: none;
-  }
-  #pillows-workspace .pw-account {
-    grid-column: 2;
-    grid-row: 2;
-    justify-self: end;
-  }
-}
 
 /* Standalone page frame */
 body {
@@ -886,20 +836,6 @@ body {
   min-height: 100vh;
 }
 
-/* Source provenance stays distinct from the example catalogue data. */
-#pillows-workspace .pw-source-note {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 5px 16px;
-  margin: 0 0 18px;
-  padding: 10px 14px;
-  border-left: 3px solid var(--pw-gold);
-  background: var(--pw-wash);
-  color: var(--pw-muted);
-  font-size: 13px;
-}
-#pillows-workspace .pw-source-note strong { color: var(--pw-ink); }
 #pillows-workspace .pw-room-source {
   padding: 12px 14px;
   background: var(--pw-wash);
@@ -907,3 +843,12 @@ body {
   font-size: 14px;
 }
 #pillows-workspace .pw-room-source span { display: block; margin-top: 4px; }
+
+#pillows-workspace .pw-shell { min-height: 100vh; display: flex; flex-direction: column; }
+#pillows-workspace .pw-icon { flex: none; }
+#pillows-workspace .pw-inline-search > .pw-icon { position: absolute; top: 12px; left: 12px; color: var(--pw-muted); pointer-events: none; }
+#pillows-workspace select { appearance: none; padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%238b8173' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+#pillows-workspace .pw-preview-details { max-width: 420px; }
+#pillows-workspace .pw-preview-details summary { padding: 0; text-align: right; color: var(--pw-muted); }
+#pillows-workspace .pw-preview-details p { margin-top: 8px; font-size: 13px; }
+#pillows-workspace h1:focus { outline: none; }

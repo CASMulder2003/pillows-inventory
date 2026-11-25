@@ -1,7 +1,7 @@
 import { productMatches } from "../app/selectors.js";
 import { AccountMenu } from "../components/Account.jsx";
-import { products, suppliers } from "../data/inventory.js";
-import { Button, Select } from "../components/ui.jsx";
+import { products } from "../data/inventory.js";
+import { Button, Select, Icon } from "../components/ui.jsx";
 import { levelName, names } from "../app/selectors.js";
 import { useWorkspace } from "../app/WorkspaceContext.jsx";
 
@@ -9,7 +9,6 @@ import { useWorkspace } from "../app/WorkspaceContext.jsx";
 export function AppShell({ children }) {
   const {
     accent,
-    access,
     active,
     allowedHotels,
     back,
@@ -48,7 +47,7 @@ export function AppShell({ children }) {
       : [];
   return (
     <div
-      className={`${density === "Compact" ? "pw-compact" : ""} ${accent === "Gold" ? "pw-gold-actions" : ""}`}
+      className={`pw-shell ${density === "Compact" ? "pw-compact" : ""} ${accent === "Gold" ? "pw-gold-actions" : ""}`}
     >
       <header className="pw-header">
         <div className="pw-brand">
@@ -72,19 +71,28 @@ export function AppShell({ children }) {
             </>
           )}
         </div>
-        <div className="pw-inline-search">
+        <div className="pw-inline-search" onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setGlobalQuery("");
+        }}>
+          <Icon name="search" />
           <input
             type="search"
             aria-label="Search hotel"
+            aria-expanded={Boolean(q)}
+            aria-controls={q ? "pw-search-results" : undefined}
             placeholder="Search rooms, items, paint…"
             value={globalQuery}
             onChange={(e) => setGlobalQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Escape") setGlobalQuery("");
+              if (e.key === "Enter") {
+                if (searchSpaces[0]) openSpace(searchSpaces[0].id);
+                else if (searchProducts[0]) openProduct(searchProducts[0].id, { allSpaces: true });
+              }
             }}
           />
           {q && (
-            <div className="pw-search-results" aria-label="Search results">
+            <div id="pw-search-results" className="pw-search-results" aria-label="Search results">
               {searchSpaces.map((s) => (
                 <Button key={s.id} onClick={() => openSpace(s.id)}>
                   {labelSpace(s)}
@@ -136,7 +144,7 @@ export function AppShell({ children }) {
             aria-current={active === page ? "page" : undefined}
             onClick={() => nav(page)}
           >
-            {names[page]}
+            <Icon name={page} /><span>{names[page]}</span>
             {page === "issues" && openIssues.length > 0 && (
               <span className="pw-count">{openIssues.length}</span>
             )}
@@ -144,18 +152,10 @@ export function AppShell({ children }) {
         ))}
       </nav>
       <main className="pw-main">
-        <aside className="pw-source-note" aria-label="Prototype data status">
-          <strong>{hotelId === "ams" ? "Amsterdam · Plan review" : "Catalogue preview"}</strong>
-          <span>{hotelId === "ams"
-            ? "Spaces follow the supplied drawings. Inventory, finishes and issue records are examples pending the hotel’s material list."
-            : hotelId === "all"
-              ? "Amsterdam spaces follow supplied drawings. Other hotel layouts and all inventory are illustrative."
-              : "This hotel’s layout and inventory are illustrative. Amsterdam is the first property being mapped from drawings."}</span>
-        </aside>
         {trail.length > 0 && (
           <div className="pw-crumb">
             <Button link onClick={back}>
-              ← Back to{" "}
+              Back to{" "}
               {names[trail.at(-1)?.page] ||
                 (trail.at(-1)?.page === "space"
                   ? "space"
@@ -176,14 +176,11 @@ export function AppShell({ children }) {
         {children}
       </main>
       <footer className="pw-footer">
-        <span className="pw-preview-label">
-          {hotelId === "ams" ? "Drawing-based spaces · Sample inventory" : hotelId === "all" ? "Mixed layout sources · Sample inventory" : "Illustrative layouts · Sample inventory"}
-        </span>
-        <span>
-          {hotelId === "ams" ? `${hotelSpaces.filter((space) => space.type === "Guest room").length} rooms on supplied plans · ` : hotelId === "ghent" ? "80 guest-room test · " : ""}
-          English · {access}
-        </span>
-        <span>Preview only · Changes and photos stay in this session</span>
+        <span>Pillows · Property catalogue</span>
+        <details className="pw-preview-details">
+          <summary>About this preview</summary>
+          <p>Amsterdam uses the supplied floor plans. Other hotel maps and all inventory are illustrative. Changes and photos stay in this session.</p>
+        </details>
       </footer>
     </div>
   );

@@ -44,7 +44,7 @@ export function FinishForm() {
           subtitle={`${space.name} · ${levelName(space.hotelId, space.floor)}`}
         />
       }
-      <div className="pw-form">
+      <form className="pw-form" onSubmit={(e) => { e.preventDefault(); if (!photoBusy) save(); }}>
         {adding && (
           <Field label="Surface">
             <input
@@ -111,12 +111,12 @@ export function FinishForm() {
           </div>
         )}
         <div className="pw-actions">
-          <Button primary disabled={photoBusy} onClick={save}>
+          <Button primary type="submit" disabled={photoBusy}>
             {adding ? "Add finish" : "Save finish"}
           </Button>
           <Button onClick={back}>Cancel</Button>
         </div>
-      </div>
+      </form>
     </>
   );
 }

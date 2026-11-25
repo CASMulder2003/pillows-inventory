@@ -84,7 +84,7 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
   const naturalHeight = (width * plan.height) / plan.width;
   const sourceLimit = Math.max(
     compact ? 280 : 320,
-    Math.min(compact ? 420 : 560, windowHeight - 280),
+    Math.min(compact ? 420 : 640, windowHeight - 230),
   );
   const height = plan.sourceBased
     ? Math.min(sourceLimit, Math.max(width < 500 ? 300 : 380, naturalHeight))
@@ -218,20 +218,39 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
   function moveDrag(e) {
     const gesture = drag.current;
     if (!gesture || gesture.pointerId !== e.pointerId) return;
+    // A mouse can leave the stage before crossing the drag threshold. Ignore a
+    // later re-entry after its button was released outside the stage.
+    if (e.pointerType === "mouse" && !(e.buttons & 1)) {
+      stopDrag(e);
+      return;
+    }
     const dx = e.clientX - gesture.x;
     const dy = e.clientY - gesture.y;
     if (Math.hypot(dx, dy) <= 6 && !gesture.moved) return;
+    if (!gesture.moved) e.currentTarget.setPointerCapture(e.pointerId);
     gesture.moved = true;
-    e.currentTarget.setPointerCapture(e.pointerId);
     setCamera({
       ...gesture.start,
       x: gesture.start.x - (dx * fitWidth) / (width * gesture.start.zoom),
       y: gesture.start.y - (dy * fitHeight) / (height * gesture.start.zoom),
     });
   }
-  function stopDrag() {
+  function stopDrag(e) {
     if (drag.current?.moved) lastDrag.current = Date.now();
     drag.current = null;
+    if (e?.currentTarget.hasPointerCapture(e.pointerId))
+      e.currentTarget.releasePointerCapture(e.pointerId);
+  }
+  function keyDown(e) {
+    // Room links keep their native Enter behaviour; shortcuts belong to the stage.
+    if (e.target !== e.currentTarget) return;
+    const directions = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    if (directions[e.key]) pan(...directions[e.key]);
+    else if (e.key === "+" || e.key === "=") zoomBy(1.4);
+    else if (e.key === "-") zoomBy(1 / 1.4);
+    else if (e.key === "Escape" || e.key === "0") fit();
+    else return;
+    e.preventDefault();
   }
   // A pointer-up following a pan must not also open the room underneath it.
   function canActivateSpace() {
@@ -320,7 +339,9 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
       onPointerMove: moveDrag,
       onPointerUp: stopDrag,
       onPointerCancel: stopDrag,
+      onPointerLeave: (e) => { if (!drag.current?.moved) stopDrag(e); },
       onLostPointerCapture: stopDrag,
+      onKeyDown: keyDown,
     },
   };
 }
