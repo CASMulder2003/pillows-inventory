@@ -53,7 +53,7 @@ export function Catalogue() {
           title={hotelId === "all" ? "Collection catalogue" : "Catalogue"}
           subtitle={
             hotelId === "all"
-              ? `Combined quantities across ${allowedHotels.length} accessible hotel portals`
+              ? `${allowedHotels.length} accessible hotels`
               : null
           }
           actions={
@@ -69,7 +69,7 @@ export function Catalogue() {
           }
         />
       }
-      <ScopeSummary />
+      <div className="pw-toolbar pw-list-toolbar">
       <div className="pw-catalogue-kinds pw-view-switch" role="group" aria-label="Catalogue type">
         {[["all", "All items"], ["object", "Objects"], ["finish", "Paint & finishes"]].map(([kind, label]) => (
           <Button key={kind} aria-pressed={filter.kind === kind} onClick={() => {
@@ -78,7 +78,7 @@ export function Catalogue() {
           }}>{label}</Button>
         ))}
       </div>
-      <div className="pw-toolbar">
+
         <Field label="Search the catalogue" className="search">
           <input
             type="search"
@@ -121,6 +121,7 @@ export function Catalogue() {
           Clear filters
         </Button>
       </div>
+      <ScopeSummary />
       <div className="pw-results">
         <span>
           {scoped.length} spaces

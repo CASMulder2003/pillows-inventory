@@ -1,43 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "./ui.jsx";
+import { Menu } from "./Menu.jsx";
 
 export function AccountMenu({ onAccount, onSettings, onLogout }) {
-  const [open, setOpen] = useState(false);
-  const menu = useRef(null);
-  const trigger = useRef(null);
-  useEffect(() => {
-    if (!open) return;
-    const closeOutside = (e) => {
-      if (menu.current && !menu.current.contains(e.target)) setOpen(false);
-    };
-    const closeOnEscape = (e) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        trigger.current?.focus();
-      }
-    };
-    document.addEventListener("pointerdown", closeOutside);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("pointerdown", closeOutside);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [open]);
-  const choose = (action) => {
-    setOpen(false);
-    action();
-  };
-  return (
-    <div className="pw-account" ref={menu}>
-      <button
-        type="button"
-        className="pw-account-trigger"
-        ref={trigger}
-        aria-label="Account menu"
-        title="Account menu"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-      >
+  return <div className="pw-account">
+    <Menu label="Account menu" className="pw-account-menu" trigger={
         <svg
           width="26"
           height="26"
@@ -54,22 +19,12 @@ export function AccountMenu({ onAccount, onSettings, onLogout }) {
           <circle cx="12" cy="9" r="3" />
           <path d="M5.6 19.7a6.5 6.5 0 0 1 12.8 0" />
         </svg>
-      </button>
-      {open && (
-        <div className="pw-account-dropdown">
-          <Button quiet onClick={() => choose(onAccount)}>
-            Account
-          </Button>
-          <Button quiet onClick={() => choose(onSettings)}>
-            Settings
-          </Button>
-          <Button quiet onClick={() => choose(onLogout)}>
-            Log out
-          </Button>
-        </div>
-      )}
-    </div>
-  );
+    } items={[
+      { id: "account", label: "Account", onSelect: onAccount },
+      { id: "settings", label: "Settings", onSelect: onSettings },
+      { id: "logout", label: "Log out", separatorBefore: true, onSelect: onLogout },
+    ]} />
+  </div>;
 }
 
 const appearanceOptions = [

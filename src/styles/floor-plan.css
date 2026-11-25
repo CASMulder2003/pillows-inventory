@@ -262,7 +262,7 @@
 }
 
 #pillows-workspace .pw-plan-label.pw-plan-alert {
-  fill: var(--pw-danger);
+  fill: var(--pw-alert);
   font-weight: 700;
   paint-order: stroke;
   stroke: var(--pw-paper);
@@ -517,7 +517,7 @@
 }
 
 #pillows-workspace .pw-map-issue-key b {
-  color: var(--pw-danger);
+  color: var(--pw-alert);
 }
 
 #pillows-workspace .pw-plan-details {

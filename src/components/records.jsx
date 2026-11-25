@@ -1,4 +1,5 @@
 import { productById, spaceById } from "../data/inventory.js";
+import { Menu } from "./Menu.jsx";
 import { Button, Table, Empty, Status } from "../components/ui.jsx";
 import { PhotoGallery, ProductThumb } from "../media/Media.jsx";
 import { dateLabel } from "../app/selectors.js";
@@ -88,8 +89,8 @@ export function HistoryTable({ rows }) {
         <tr key={e.id}>
           <td>{dateLabel(e.date)}</td>
           <td>
+            {e.type} {e.qty ? `${e.qty} × ` : ""}
             <Button link onClick={() => openProduct(e.productId)}>
-              {e.type} {e.qty ? `${e.qty} × ` : ""}
               {productById(e.productId).name}
             </Button>
             {e.replacementId && e.replacementId !== e.productId && (
@@ -137,7 +138,7 @@ export function ScopeSummary() {
   const { data, scopeIds, setFilters, setScopeIds, wholeScope } =
     useWorkspace();
   return scopeIds.length ? (
-    <div className="pw-batch">
+    <div className="pw-scope-line">
       <strong>
         {scopeIds.length} selected spaces ·{" "}
         {scopeIds
@@ -158,8 +159,26 @@ export function ScopeSummary() {
           }));
         }}
       >
-        {wholeScope}
+        Show {wholeScope.toLowerCase()}
       </Button>
     </div>
   ) : null;
+}
+
+// Every inventory row uses the same actions and opens a review form before saving.
+export function InventoryActions({ productId, spaceIds }) {
+  const { openForm } = useWorkspace();
+  const product = productById(productId);
+  const actions = [
+    ["report", "Report an issue", "Record damage or a fault"],
+    ...(product.kind === "object" ? [
+      ["replace", "Record replacement", "Replace with the same or a different model"],
+      ["add", "Add units", "Increase the installed quantity"],
+      ["remove", "Remove units", "Reduce the installed quantity"],
+    ] : []),
+  ];
+  return <Menu label={`Update ${product.name}`} trigger="Update" className="pw-inventory-menu"
+    items={actions.map(([id, label, description]) => ({ id, label, description,
+      danger: id === "remove", onSelect: () => openForm(id, { productId, spaceIds }),
+    }))} />;
 }

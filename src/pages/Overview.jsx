@@ -30,13 +30,13 @@ function useOverviewActions() {
   };
 }
 
-function SummaryMetric({ value, label, detail, onClick, attention = false }) {
+function SummaryMetric({ value, label, action, onClick, attention = false }) {
   return (
-    <button type="button" className={`pw-dashboard-metric${attention ? " attention" : ""}`} onClick={onClick}>
+    <div className={`pw-dashboard-metric${attention ? " attention" : ""}`}>
       <span className="pw-metric-label">{label}</span>
       <strong className="pw-metric-value">{value.toLocaleString("en-GB")}</strong>
-      <span className="pw-metric-detail">{detail}</span>
-    </button>
+      <Button link className="pw-metric-action" onClick={onClick}>{action}</Button>
+    </div>
   );
 }
 
@@ -75,9 +75,9 @@ function CollectionOverview() {
       <Heading title="Your hotels" subtitle="A shared catalogue. A clear view of every property."
         actions={<Button onClick={() => actions.catalogue()}>Combined catalogue</Button>} />
       <div className="pw-dashboard-metrics" aria-label="Collection totals">
-        <SummaryMetric value={properties.reduce((total, hotel) => total + hotel.objects, 0)} label="Installed objects" detail="Across all accessible hotels" onClick={() => actions.catalogue("object")} />
-        <SummaryMetric value={totals.filter((row) => row.kind === "finish").length} label="Finish specifications" detail="Paint, materials and finishes" onClick={() => actions.catalogue("finish")} />
-        <SummaryMetric value={openIssues.length} label="Outstanding issues" detail="Review repairs and replacements" attention={openIssues.length > 0} onClick={actions.issues} />
+        <SummaryMetric value={properties.reduce((total, hotel) => total + hotel.objects, 0)} label="Installed objects" action="View objects" onClick={() => actions.catalogue("object")} />
+        <SummaryMetric value={totals.filter((row) => row.kind === "finish").length} label="Finish specifications" action="View finishes" onClick={() => actions.catalogue("finish")} />
+        <SummaryMetric value={openIssues.length} label="Outstanding issues" action="View open issues" attention={openIssues.length > 0} onClick={actions.issues} />
       </div>
       <div className="pw-sectionbar pw-collection-heading">
         <h2>Choose a property</h2>
@@ -115,25 +115,24 @@ export function Overview() {
   const actions = useOverviewActions();
   if (hotelId === "all") return <CollectionOverview />;
   const unverified = hotelSpaces.filter((space) => !space.verified).length;
-  const ordered = openIssues.filter((issue) => issue.status === "Ordered").length;
   return (
     <div className="pw-dashboard">
       <Heading title={hotel.property} subtitle={`${hotel.name} · Property overview`}
         actions={<Button onClick={() => actions.spaces("list")}>Space list</Button>} />
       <div className="pw-dashboard-metrics" aria-label="Hotel totals">
         <SummaryMetric value={hotelSpaces.reduce((total, space) => total + countObjects(space), 0)}
-          label="Installed objects" detail="See quantities and where they are used" onClick={() => actions.catalogue("object")} />
+          label="Installed objects" action="View objects" onClick={() => actions.catalogue("object")} />
         <SummaryMetric value={totals.filter((row) => row.kind === "finish").length}
-          label="Finish specifications" detail="Paint, materials and finishes" onClick={() => actions.catalogue("finish")} />
+          label="Finish specifications" action="View finishes" onClick={() => actions.catalogue("finish")} />
         <SummaryMetric value={openIssues.length} label="Outstanding issues"
-          detail={ordered ? `${ordered} replacement${ordered === 1 ? "" : "s"} ordered` : "Review repairs and replacements"}
+          action="View open issues"
           attention={openIssues.length > 0} onClick={actions.issues} />
       </div>
       <div className="pw-dashboard-grid">
         <section className="pw-dashboard-plan" aria-label="Explore the property">
           <div className="pw-sectionbar">
             <h2>Explore the property</h2>
-            <Button link onClick={() => actions.spaces()}>All spaces</Button>
+            <Button link onClick={() => actions.spaces()}>Explore all spaces</Button>
           </div>
           <FloorPlan page={planPage} onPage={setPlanPage} query={planQuery} onQuery={setPlanQuery}
             focusId={planFocus} onFocus={setPlanFocus} data={data} hotelId={hotelId}
@@ -142,7 +141,7 @@ export function Overview() {
         <section className="pw-dashboard-attention" aria-label="Needs attention">
           <div className="pw-sectionbar">
             <h2>Needs attention</h2>
-            <Button link onClick={actions.issues}>View all</Button>
+            <Button link onClick={actions.issues}>View all issues</Button>
           </div>
           {openIssues.slice(0, 3).map((issue) => <IssueCard key={issue.id} issue={issue} />)}
           {!openIssues.length && <Empty title="All clear" text="No outstanding issues in this hotel." />}
@@ -158,7 +157,7 @@ export function Overview() {
       </section>
       {unverified > 0 && <div className="pw-record-review">
         <span><strong>{unverified} spaces</strong> still need an inventory check.</span>
-        <Button link onClick={() => actions.spaces("list", "unverified")}>Review records</Button>
+        <Button link onClick={() => actions.spaces("list", "unverified")}>Review unchecked spaces</Button>
       </div>}
     </div>
   );

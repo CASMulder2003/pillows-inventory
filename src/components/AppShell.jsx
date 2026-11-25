@@ -1,7 +1,8 @@
 import { productMatches } from "../app/selectors.js";
+import { HotelSelector } from "./HotelSelector.jsx";
 import { AccountMenu } from "../components/Account.jsx";
 import { products } from "../data/inventory.js";
-import { Button, Select, Icon } from "../components/ui.jsx";
+import { Button, Icon } from "../components/ui.jsx";
 import { levelName, names } from "../app/selectors.js";
 import { useWorkspace } from "../app/WorkspaceContext.jsx";
 
@@ -55,15 +56,7 @@ export function AppShell({ children }) {
         </div>
         <div className="pw-hotel">
           {allowedHotels.length > 1 ? (
-            <Select
-              label="Hotel portal"
-              value={hotelId}
-              onChange={switchHotel}
-              options={[
-                ...allowedHotels.map((h) => [h.id, h.name]),
-                ["all", "All accessible hotels"],
-              ]}
-            />
+            <HotelSelector hotels={allowedHotels} value={hotelId} onChange={switchHotel} />
           ) : (
             <>
               <strong>{hotel?.property}</strong>
@@ -141,6 +134,7 @@ export function AppShell({ children }) {
         ).map((page) => (
           <Button
             key={page}
+            className={page === "issues" && openIssues.length ? "has-issues" : ""}
             aria-current={active === page ? "page" : undefined}
             onClick={() => nav(page)}
           >

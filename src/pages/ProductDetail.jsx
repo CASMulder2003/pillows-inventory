@@ -6,7 +6,7 @@ import {
   aggregate,
 } from "../data/inventory.js";
 import { Button, Table, Empty, Heading } from "../components/ui.jsx";
-import { HistoryTable } from "../components/records.jsx";
+import { HistoryTable, InventoryActions } from "../components/records.jsx";
 import { ProductPhotos } from "../media/Media.jsx";
 import { levelName } from "../app/selectors.js";
 import { useWorkspace } from "../app/WorkspaceContext.jsx";
@@ -15,7 +15,6 @@ import { useWorkspace } from "../app/WorkspaceContext.jsx";
 export function ProductDetail() {
   const {
     allowedHotels,
-    back,
     data,
     hotelId,
     hotelSpaceIds,
@@ -45,7 +44,7 @@ export function ProductDetail() {
       {
         <Heading
           title={p.name}
-          subtitle={`${p.code} · ${p.category}`}
+          subtitle={`${p.code} · ${p.category}${fromRoom ? ` · From ${fromRoom.name}${p.kind === "object" ? ` (${fromRoom.items[p.id] || 0} installed)` : ""}` : ""}`}
           actions={
             <Button
               onClick={() =>
@@ -79,19 +78,6 @@ export function ProductDetail() {
               : hotelId === "all"
                 ? "Show all accessible hotels"
                 : "Show entire hotel"}
-          </Button>
-        </div>
-      )}
-      {fromRoom && (
-        <div className="pw-results">
-          <span>
-            Opened from {fromRoom.name}
-            {p.kind === "object"
-              ? ` · ${fromRoom.items[p.id] || 0} installed`
-              : ""}
-          </span>
-          <Button link onClick={back}>
-            Return to {fromRoom.name} →
           </Button>
         </div>
       )}
@@ -288,7 +274,7 @@ export function ProductDetail() {
                   })
                 }
               >
-                Change {displayLocs.length} spaces
+                Record replacement in {displayLocs.length} {displayLocs.length === 1 ? "space" : "spaces"}
               </Button>
             )}
           </div>
@@ -302,7 +288,7 @@ export function ProductDetail() {
                   label: p.kind === "object" ? "Quantity" : "Surface / area",
                   className: "num",
                 },
-                "Action",
+                { label: "Action", className: "action-col" },
               ]}
             >
               {displayLocs.map((s) => (
@@ -333,17 +319,8 @@ export function ProductDetail() {
                           )
                           .join(", ")}
                   </td>
-                  <td>
-                    <Button
-                      onClick={() =>
-                        openForm("report", {
-                          productId: p.id,
-                          spaceIds: [s.id],
-                        })
-                      }
-                    >
-                      Report / change
-                    </Button>
+                  <td className="action-col">
+                    <InventoryActions productId={p.id} spaceIds={[s.id]} />
                   </td>
                 </tr>
               ))}

@@ -1,0 +1,57 @@
+/* Shared anchored menus stay outside table clipping and inherit both themes. */
+#pillows-workspace .pw-menu { display: inline-flex; min-width: 0; }
+#pillows-workspace .pw-menu-trigger { gap: 10px; white-space: nowrap; }
+#pillows-workspace .pw-menu-trigger[aria-expanded="true"] { border-color: var(--pw-gold); background: var(--pw-selected); }
+#pillows-workspace .pw-menu-chevron { flex: none; color: var(--pw-muted); transition: transform 120ms; }
+#pillows-workspace .pw-menu-trigger[aria-expanded="true"] .pw-menu-chevron { transform: rotate(180deg); }
+#pillows-workspace .pw-menu-panel {
+  position: fixed;
+  z-index: 100;
+  width: 260px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--pw-line);
+  border-radius: 10px;
+  background: var(--pw-paper);
+  box-shadow: 0 8px 32px var(--pw-shadow);
+}
+#pillows-workspace .pw-menu-panel .pw-menu-item {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 6px;
+  text-align: left;
+  white-space: normal;
+  background: transparent;
+}
+#pillows-workspace .pw-menu-item-label { display: block; font-size: 14px; }
+#pillows-workspace .pw-menu-item small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.4; color: var(--pw-muted); }
+#pillows-workspace .pw-menu-item:hover:not(:disabled),
+#pillows-workspace .pw-menu-item:focus-visible { outline: none; background: var(--pw-wash); box-shadow: inset 0 0 0 1px var(--pw-gold); }
+#pillows-workspace .pw-menu-item[aria-checked="true"] { background: var(--pw-selected); }
+#pillows-workspace .pw-menu-item[aria-checked="true"] .pw-menu-item-label { font-weight: 700; }
+#pillows-workspace .pw-menu-item.danger { color: var(--pw-danger); }
+#pillows-workspace .pw-menu-panel .pw-menu-item.separated { border-top: 1px solid var(--pw-line); margin-top: 6px; padding-top: 14px; border-radius: 0 0 6px 6px; }
+#pillows-workspace .pw-menu-check { align-self: center; color: var(--pw-gold); font-weight: 700; }
+#pillows-workspace .pw-hotel-selector { width: 100%; max-width: 300px; }
+#pillows-workspace .pw-hotel-selector .pw-menu-trigger { width: 100%; justify-content: space-between; text-align: left; padding: 8px 12px; background: var(--pw-wash); }
+#pillows-workspace .pw-hotel-selection { min-width: 0; }
+#pillows-workspace .pw-hotel-selection strong { display: block; font: 700 15px/1.3 Lato, Arial, sans-serif; }
+#pillows-workspace .pw-hotel-selection small { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+#pillows-workspace .pw-menu-panel.pw-hotel-selector { width: 320px; max-width: calc(100vw - 24px); }
+@media (max-width: 680px) {
+  #pillows-workspace .pw-hotel-selector .pw-menu-trigger { min-height: 42px; padding: 9px 10px; }
+  #pillows-workspace .pw-hotel-selection strong { font-size: 14px; white-space: normal; }
+  #pillows-workspace .pw-hotel-selection small { display: none; }
+}
+
+#pillows-workspace .pw-account-menu .pw-menu-trigger { width: 44px; height: 44px; border-radius: 50%; padding: 0; }
+#pillows-workspace .pw-account-menu .pw-menu-chevron { display: none; }
+#pillows-workspace .pw-menu-panel.pw-account-menu { width: 210px; }
+#pillows-workspace .pw-inventory-menu .pw-menu-trigger { min-height: 36px; padding: 7px 10px; }

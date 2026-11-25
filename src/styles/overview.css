@@ -1,4 +1,4 @@
-/* The overview is a working surface: totals are links and whole hotel cards open a portal. */
+/* Totals are read-only; named actions make each destination explicit. */
 #pillows-workspace .pw-dashboard-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -30,7 +30,10 @@
   letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
 }
-#pillows-workspace .pw-metric-detail { color: var(--pw-muted); font-size: 13px; }
+#pillows-workspace .pw-dashboard-metric .pw-metric-action {
+  justify-self: start; text-align: left; white-space: normal; font-size: 14px;
+  text-decoration: underline; text-underline-offset: 3px;
+}
 #pillows-workspace .pw-dashboard-metric.attention { border-left: 3px solid var(--pw-gold); }
 #pillows-workspace .pw-dashboard-metric.attention .pw-metric-value { color: var(--pw-danger); }
 
@@ -169,12 +172,10 @@
   #pillows-workspace .pw-hotel-cards { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 560px) {
-  #pillows-workspace .pw-metric-detail { display: none; }
   #pillows-workspace .pw-dashboard-metrics { gap: 8px; margin: 18px 0 24px; }
   #pillows-workspace .pw-dashboard-metric { padding: 12px 10px; gap: 7px; align-content: start; }
   #pillows-workspace .pw-metric-label { font-size: 14px; line-height: 1.3; }
   #pillows-workspace .pw-metric-value { font-size: 28px; }
-  #pillows-workspace .pw-metric-detail { font-size: 13px; line-height: 1.35; }
   #pillows-workspace .pw-hotel-cards { grid-template-columns: minmax(0, 1fr); }
   #pillows-workspace .pw-hotel-card { padding: 20px; }
   #pillows-workspace .pw-hotel-card-header { gap: 12px; }

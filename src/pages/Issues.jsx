@@ -44,7 +44,6 @@ export function Issues() {
       {
         <Heading
           title={"Issues"}
-          subtitle={"Follow a reported problem through ordering and resolution"}
         />
       }
       {filter.spaceIds && (
@@ -64,7 +63,7 @@ export function Issues() {
           </Button>
         </div>
       )}
-      <div className="pw-toolbar">
+      <div className="pw-toolbar pw-list-toolbar">
         <Field label="Find an issue" className="search">
           <input
             type="search"
@@ -103,12 +102,11 @@ export function Issues() {
       </div>
       <div className="pw-results">
         <span>{rows.length} matching issues</span>
-        <span>Damage reports do not change installed quantities</span>
       </div>
       {rows.length ? (
         <Table
           label="Issues queue"
-          head={["Issue", "Location", "Status", "Next action"]}
+          head={["Issue", "Location", "Status", { label: "Next action", className: "action-col" }]}
         >
           {rows.map((i) => (
             <tr key={i.id}>
@@ -144,7 +142,7 @@ export function Issues() {
                   </small>
                 )}
               </td>
-              <td>
+              <td className="action-col">
                 {isActiveIssue(i) ? (
                   <div className="pw-actions">
                     <Button

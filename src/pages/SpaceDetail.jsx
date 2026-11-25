@@ -8,6 +8,7 @@ import {
 import { Button, Table, Heading } from "../components/ui.jsx";
 import {
   ProductRecord,
+  InventoryActions,
   IssueCard,
   HistoryTable,
 } from "../components/records.jsx";
@@ -40,34 +41,31 @@ export function SpaceDetail() {
           }
         />
       }
-      {s.sourceDrawing && (
-        <p className="pw-room-source">
-          <strong>{s.sourceCode ? `Drawing space ${s.sourceCode}` : "Drawing-based space"}</strong>
-          {s.sourceArea != null && ` · Drawing area ${s.sourceArea.toLocaleString("en-GB")} m²`}
-          {` · ${s.sourceDrawing}`}
-          {s.sourceNote && <span>{s.sourceNote}</span>}
-          <span>{s.inventoryStatus === "sample" ? "Example inventory — specifications still to be supplied." : "Inventory awaiting the hotel’s material list."}</span>
-        </p>
-      )}
-      <div className="pw-room-metrics">
-        <span>
-          <b>{countObjects(s)}</b> objects
-        </span>
-        <span>
-          <b>{s.finishes.length}</b> applied finishes
-        </span>
-        <span>
-          <b>{issues.length}</b> outstanding issues
-        </span>
-        <span>
-          {s.verified
-            ? `Verified ${dateLabel(s.verified)}`
-            : "Inventory not yet verified"}
-        </span>
+      <div className="pw-room-header-meta">
+        <div className="pw-room-counts">
+          <span><b>{countObjects(s)}</b> objects</span>
+          <span><b>{s.finishes.length}</b> applied finishes</span>
+          <span><b>{issues.length}</b> outstanding {issues.length === 1 ? "issue" : "issues"}</span>
+        </div>
+        <details className="pw-room-details">
+          <summary>Room details</summary>
+          <div className="pw-room-details-content">
+            <p>{s.verified ? `Verified ${dateLabel(s.verified)}` : "Inventory not yet verified"}</p>
+            {s.sourceDrawing && <>
+              <p>
+                <strong>{s.sourceCode ? `Drawing space ${s.sourceCode}` : "Drawing-based space"}</strong>
+                {s.sourceArea != null && ` · Drawing area ${s.sourceArea.toLocaleString("en-GB")} m²`}
+                {` · ${s.sourceDrawing}`}
+              </p>
+              {s.sourceNote && <p>{s.sourceNote}</p>}
+              <p>{s.inventoryStatus === "sample" ? "Example inventory — specifications still to be supplied." : "Inventory awaiting the hotel’s material list."}</p>
+            </>}
+          </div>
+        </details>
       </div>
       <div className="pw-tabs">
         <Button
-          aria-pressed={route.tab === "contents"}
+          aria-pressed={route.tab !== "history"}
           onClick={() =>
             setRoute((r) => ({
               ...r,
@@ -105,7 +103,7 @@ export function SpaceDetail() {
                   label: "Qty",
                   className: "num",
                 },
-                "Action",
+                { label: "Update", className: "action-col" },
               ]}
             >
               {Object.entries(s.items)
@@ -116,18 +114,8 @@ export function SpaceDetail() {
                       <ProductRecord id={id} onOpen={openProduct} />
                     </td>
                     <td className="num">{n}</td>
-                    <td>
-                      <Button
-                        quiet
-                        onClick={() =>
-                          openForm("report", {
-                            productId: id,
-                            spaceIds: [s.id],
-                          })
-                        }
-                      >
-                        Report / change
-                      </Button>
+                    <td className="action-col">
+                      <InventoryActions productId={id} spaceIds={[s.id]} />
                     </td>
                   </tr>
                 ))}

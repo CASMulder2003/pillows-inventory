@@ -45,10 +45,9 @@ export function History() {
       {
         <Heading
           title={"History"}
-          subtitle={"Recorded changes and replacement patterns"}
         />
       }
-      <div className="pw-toolbar">
+      <div className="pw-toolbar pw-list-toolbar">
         <Field label="Find a change" className="search">
           <input
             type="search"

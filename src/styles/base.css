@@ -23,6 +23,7 @@
   --pw-gold: #b2854f;
   --pw-link: #39352e;
   --pw-selected: #f0e4d2;
+  --pw-alert: #c92e2e;
   --pw-danger: #8c3c2c;
   --pw-danger-bg: #f9ece8;
   --pw-good: #3b644e;
@@ -50,6 +51,7 @@
   --pw-gold: #c6a477;
   --pw-link: #eee5d7;
   --pw-selected: #4a3d2b;
+  --pw-alert: #ff6862;
   --pw-danger: #f2b4a6;
   --pw-danger-bg: #42312b;
   --pw-good: #b2d3bf;
@@ -236,6 +238,8 @@
 /* Header, hotel navigation and shared page layout. */
 
 #pillows-workspace .pw-header {
+  position: relative;
+  z-index: 30;
   display: grid;
   grid-template-columns: 170px minmax(190px, 1fr) minmax(220px, 380px) auto;
   gap: 24px;
@@ -313,6 +317,9 @@
   font-weight: 700;
   color: var(--pw-ink);
 }
+
+#pillows-workspace .pw-nav .has-issues .pw-icon,
+#pillows-workspace .pw-nav .has-issues .pw-count { color: var(--pw-alert); }
 
 #pillows-workspace .pw-nav .pw-count {
   margin-left: 5px;
@@ -587,42 +594,9 @@
   z-index: 10;
 }
 
-#pillows-workspace .pw-account-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--pw-line);
-  border-radius: 50%;
-  padding: 0;
-  background: var(--pw-paper);
-}
 
-#pillows-workspace .pw-account-trigger[aria-expanded="true"] {
-  border-color: var(--pw-gold);
-  background: var(--pw-wash);
-}
 
-#pillows-workspace .pw-account-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  width: 210px;
-  max-width: calc(100vw - 48px);
-  padding: 8px;
-  background: var(--pw-paper);
-  border: 1px solid var(--pw-line);
-  box-shadow: 0 6px 16px var(--pw-soft-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
 
-#pillows-workspace .pw-account-dropdown button {
-  text-align: left;
-  justify-content: flex-start;
-}
 
 #pillows-workspace .pw-account-details {
   max-width: 650px;

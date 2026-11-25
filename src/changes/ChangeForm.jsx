@@ -41,7 +41,11 @@ export function ChangeForm() {
         ? "Resolve issue"
         : action === "add"
           ? "Add inventory"
-          : "Report or change inventory";
+          : action === "replace"
+            ? "Record replacement"
+            : action === "remove"
+              ? "Remove units"
+              : "Report an issue";
   const request = {
     action,
     productId: pid,
@@ -255,7 +259,13 @@ export function ChangeForm() {
               ? "Confirm ordered"
               : action === "resolve"
                 ? "Save resolution"
-                : "Save change"}
+                : action === "report"
+                  ? "Record issue"
+                  : action === "replace"
+                    ? "Record replacement"
+                    : action === "remove"
+                      ? "Remove units"
+                      : "Add units"}
           </Button>
           <Button onClick={back}>Cancel</Button>
         </div>
