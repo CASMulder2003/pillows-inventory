@@ -1,0 +1,513 @@
+/* Reusable map layout, floor controls, search results and overview navigation. */
+
+#pillows-workspace .pw-plan {
+  border: 1px solid var(--pw-line);
+  background: var(--pw-paper);
+  min-width: 0;
+}
+
+#pillows-workspace .pw-plan-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--pw-line);
+  flex-wrap: wrap;
+  background: var(--pw-paper);
+}
+
+#pillows-workspace .pw-plan-toolbar select {
+  padding: 5px 8px;
+  min-height: 31px;
+  font-size: 12px;
+}
+
+#pillows-workspace .pw-plan-toolbar button {
+  padding: 4px 8px;
+  min-height: 29px;
+  font-size: 12px;
+}
+
+#pillows-workspace .pw-plan-stage {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+  background: var(--pw-canvas);
+  min-width: 0;
+}
+
+#pillows-workspace .pw-plan-stage > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  flex: none;
+}
+
+#pillows-workspace .pw-plan-caption {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 7px 10px;
+  border-top: 1px solid var(--pw-line);
+  font-size: 12px;
+  color: var(--pw-muted);
+}
+
+#pillows-workspace .pw-plan-wall {
+  stroke: var(--pw-wall);
+  stroke-width: 2.5;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+#pillows-workspace .pw-plan-room {
+  fill: var(--pw-paper);
+  stroke: var(--pw-wall);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: fill 0.12s;
+}
+
+/* Soft functional colours keep the architecture readable in both themes. */
+#pillows-workspace .pw-plan {
+  --pw-map-guest: var(--pw-paper);
+  --pw-map-public: color-mix(in srgb, var(--pw-gold) 12%, var(--pw-paper));
+  --pw-map-circulation: var(--pw-canvas);
+  --pw-map-service: var(--pw-wash);
+  --pw-map-outdoor: var(--pw-good-bg);
+}
+
+#pillows-workspace .pw-plan-room-guest { fill: var(--pw-map-guest); }
+#pillows-workspace .pw-plan-room-public { fill: var(--pw-map-public); }
+#pillows-workspace .pw-plan-room-circulation { fill: var(--pw-map-circulation); }
+#pillows-workspace .pw-plan-room-service { fill: var(--pw-map-service); }
+#pillows-workspace .pw-plan-room-outdoor { fill: var(--pw-map-outdoor); }
+
+#pillows-workspace .pw-plan-context {
+  pointer-events: none;
+}
+
+#pillows-workspace .pw-plan-context path {
+  fill: color-mix(in srgb, var(--pw-wall) 7%, var(--pw-canvas));
+  stroke: var(--pw-line);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+
+#pillows-workspace .pw-plan-context .pw-plan-context-courtyard {
+  fill: var(--pw-map-outdoor);
+  stroke-dasharray: 4 4;
+}
+
+#pillows-workspace .pw-plan-context text {
+  fill: var(--pw-muted);
+  font-family: Lato, Arial, sans-serif;
+  text-anchor: middle;
+}
+
+#pillows-workspace .pw-plan-level-heading {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 3px 0 5px;
+}
+
+#pillows-workspace .pw-plan-level-heading strong {
+  font-size: 16px;
+}
+
+#pillows-workspace .pw-plan-level-heading span {
+  font-size: 12px;
+  color: var(--pw-muted);
+}
+
+#pillows-workspace .pw-plan-colour-key {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding-bottom: 3px;
+}
+
+#pillows-workspace .pw-plan-colour-key > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#pillows-workspace .pw-plan-colour-key i {
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--pw-wall);
+  border-radius: 2px;
+}
+
+#pillows-workspace .pw-plan-key-guest { background: var(--pw-map-guest); }
+#pillows-workspace .pw-plan-key-public { background: var(--pw-map-public); }
+#pillows-workspace .pw-plan-key-circulation { background: var(--pw-map-circulation); }
+#pillows-workspace .pw-plan-key-service { background: var(--pw-map-service); }
+#pillows-workspace .pw-plan-key-outdoor { background: var(--pw-map-outdoor); }
+
+#pillows-workspace .pw-plan-stage.is-pannable { cursor: grab; }
+#pillows-workspace .pw-plan-space { cursor: pointer; }
+#pillows-workspace .pw-plan-stage.is-pannable:active,
+#pillows-workspace .pw-plan-stage.is-pannable:active a { cursor: grabbing; }
+
+#pillows-workspace .pw-plan-room-number {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#pillows-workspace .pw-plan-room:hover,
+#pillows-workspace .pw-plan-stage a:focus-visible .pw-plan-room {
+  fill: var(--pw-selected);
+  stroke: var(--pw-ink);
+  stroke-width: 1.6;
+}
+
+#pillows-workspace .pw-plan-room.matched {
+  stroke: var(--pw-gold);
+  stroke-width: 1.8;
+}
+
+#pillows-workspace .pw-plan-room.selected {
+  fill: var(--pw-selected);
+  stroke: var(--pw-gold);
+  stroke-width: 2.2;
+}
+
+#pillows-workspace .pw-plan-room.located {
+  stroke: var(--pw-ink);
+  stroke-width: 2.2;
+  stroke-dasharray: 5 3;
+}
+
+#pillows-workspace .pw-plan-label {
+  fill: var(--pw-ink);
+  font-family: Lato, Arial, sans-serif;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+#pillows-workspace .pw-plan-label.pw-plan-alert {
+  fill: var(--pw-danger);
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--pw-paper);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}
+
+#pillows-workspace .pw-landmark {
+  fill: var(--pw-muted);
+  font-style: italic;
+}
+
+#pillows-workspace .pw-map-controls {
+  align-content: start;
+}
+
+#pillows-workspace .pw-map-controls .pw-floor-strip {
+  flex: 1 1 100%;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+#pillows-workspace .pw-plan-search {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+#pillows-workspace .pw-plan-search input {
+  width: 100%;
+  min-width: 0;
+  font-size: 13px;
+}
+
+#pillows-workspace .pw-floor-buttons {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+#pillows-workspace .pw-floor-buttons button {
+  font-size: 12px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border-color: transparent;
+}
+
+#pillows-workspace .pw-floor-buttons button[aria-pressed="true"] {
+  border-color: var(--pw-gold);
+  background: var(--pw-selected);
+  font-weight: 700;
+}
+
+#pillows-workspace .pw-level-pair {
+  display: flex;
+  gap: 2px;
+  flex-wrap: nowrap;
+}
+
+#pillows-workspace .pw-level-pair:not(:last-child) {
+  padding-right: 8px;
+  border-right: 1px solid var(--pw-line);
+}
+
+#pillows-workspace .pw-buildings {
+  display: flex;
+  gap: 6px;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+}
+
+#pillows-workspace .pw-buildings button[aria-pressed="true"] {
+  border-bottom: 2px solid var(--pw-gold);
+  font-weight: 700;
+}
+
+#pillows-workspace .pw-level-context {
+  flex: 1 1 100%;
+}
+
+#pillows-workspace .pw-zoom {
+  margin-left: auto;
+  gap: 5px;
+}
+
+#pillows-workspace .pw-plan-results {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--pw-line);
+  min-width: 0;
+}
+
+#pillows-workspace .pw-plan-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--pw-line);
+}
+
+#pillows-workspace .pw-plan-result:last-child {
+  border-bottom: 0;
+}
+
+#pillows-workspace .pw-plan-result > button:first-child {
+  flex: 1;
+  text-align: left;
+  padding-left: 0;
+  min-width: 0;
+}
+
+#pillows-workspace .pw-plan-result strong,
+#pillows-workspace .pw-plan-result small {
+  display: block;
+}
+
+#pillows-workspace .pw-plan-result.located {
+  border-left: 2px solid var(--pw-gold);
+  padding-left: 8px;
+  background: var(--pw-wash);
+}
+
+#pillows-workspace .pw-map-pagination {
+  padding-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#pillows-workspace .pw-map-pagination button {
+  font-size: 12px;
+  padding: 4px 7px;
+}
+
+#pillows-workspace .pw-map-overview {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 134px;
+  max-width: calc(100% - 16px);
+  padding: 4px;
+  border: 1px solid var(--pw-line);
+  background: var(--pw-paper);
+}
+
+#pillows-workspace .pw-map-overview > button {
+  width: 100%;
+  min-height: 27px;
+  padding: 3px 5px;
+  font-size: 11px;
+}
+
+#pillows-workspace .pw-map-overview .pw-minimap-button {
+  border: 0;
+  padding: 0;
+  min-height: 0;
+  max-width: none;
+  background: var(--pw-wash);
+  touch-action: none;
+  cursor: grab;
+}
+
+#pillows-workspace .pw-map-overview .pw-minimap-button:active {
+  cursor: grabbing;
+}
+
+#pillows-workspace .pw-overview-arrows {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3px;
+}
+
+#pillows-workspace .pw-overview-arrows button {
+  padding: 2px;
+  min-height: 27px;
+  font-size: 13px;
+}
+
+#pillows-workspace .pw-minimap {
+  display: block;
+  width: 100%;
+  height: 72px;
+  background: var(--pw-wash);
+  border: 1px solid var(--pw-line);
+}
+
+#pillows-workspace .pw-minimap path {
+  fill: none;
+  stroke: var(--pw-muted);
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+}
+
+#pillows-workspace .pw-minimap .pw-viewport {
+  fill: light-dark(#b2854f33, #c6a47733);
+  stroke: var(--pw-gold);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+#pillows-workspace .pw-map-hint {
+  font-size: 11px;
+  color: var(--pw-muted);
+}
+
+/* Responsive adjustments for this stylesheet. */
+
+@media (min-width: 721px) {
+  #pillows-workspace .pw-plan-expanded {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-toolbar,
+  #pillows-workspace .pw-plan-expanded > .pw-plan-caption {
+    grid-column: 1/-1;
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-results {
+    grid-column: 2;
+    grid-row: 2;
+    border-bottom: 0;
+    border-left: 1px solid var(--pw-line);
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-stage {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+  #pillows-workspace .pw-plan-expanded .pw-plan-search {
+    flex: 1 1 260px;
+    max-width: 440px;
+  }
+  #pillows-workspace .pw-plan-expanded .pw-plan-result strong {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 720px) {
+  #pillows-workspace .pw-plan-expanded {
+    display: flex;
+    flex-direction: column;
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-stage {
+    order: 1;
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-caption {
+    order: 2;
+  }
+  #pillows-workspace .pw-plan-expanded > .pw-plan-results {
+    order: 3;
+  }
+  #pillows-workspace .pw-plan-expanded.has-query > .pw-plan-results {
+    order: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  #pillows-workspace .pw-plan-toolbar {
+    gap: 6px;
+  }
+  #pillows-workspace .pw-plan-result {
+    align-items: start;
+  }
+  #pillows-workspace .pw-plan-result > .link {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  #pillows-workspace .pw-zoom {
+    margin-left: 0;
+  }
+}
+
+@media (pointer: coarse) {
+  #pillows-workspace .pw-plan-toolbar button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  #pillows-workspace .pw-map-overview {
+    width: 196px;
+  }
+  #pillows-workspace .pw-minimap {
+    height: 52px;
+  }
+}
+
+/* Keep the full-plan controls on two compact rows on laptops and tablets. */
+@media (min-width: 1000px) {
+  #pillows-workspace .pw-plan:not(.is-compact) .pw-plan-level-heading {
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    gap: 2px;
+  }
+  #pillows-workspace .pw-plan:not(.is-compact) .pw-plan-search {
+    flex: 1 1 220px;
+    max-width: 440px;
+  }
+}
+#pillows-workspace .pw-floor-buttons {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+#pillows-workspace .pw-level-pair { flex-shrink: 0; }
