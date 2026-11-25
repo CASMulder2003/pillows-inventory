@@ -61,6 +61,14 @@ export function fitFloorCamera(plan, fit) {
   }, plan, fit);
 }
 
+/** Resize a fitted floor with its viewport, keeping manually chosen views. */
+export function resizeCamera(current, previousFit, nextFit) {
+  const wasFitted = previousFit && ["x", "y", "zoom"].every(
+    (key) => Math.abs(current[key] - previousFit[key]) < 0.000001,
+  );
+  return wasFitted ? nextFit : current;
+}
+
 /**
  * The camera uses SVG plan units; pointer gestures arrive in screen pixels.
  * All input paths end in setCamera, which applies the same zoom and pan bounds.
@@ -103,6 +111,10 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
   );
   const fitted = fitFloorCamera(plan, fitSize);
   const initialCamera = useMemo(() => fitted, [fitted.x, fitted.y, fitted.zoom]);
+  const priorFit = useRef({
+    key: memoryKey,
+    camera: cached?.fittedCamera || initialCamera,
+  });
   const [viewState, setViewState] = useState(() => ({
     key: memoryKey,
     camera: cached?.camera || initialCamera,
@@ -201,7 +213,7 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
     setCamera(initialCamera);
   }
   function rememberView() {
-    cameraMemory.set(memoryKey, { camera, width, focusId });
+    cameraMemory.set(memoryKey, { camera, width, focusId, fittedCamera: initialCamera });
   }
 
   function startDrag(e) {
@@ -280,11 +292,20 @@ export function useMapCamera({ plan, memoryKey, compact, focusId }) {
       if (found) focusBounds(found.bounds);
     }
   }, [memoryKey, focusId, plan.shapes, focusBounds]);
-  useEffect(() => setCamera((current) => current), [setCamera]);
+  useEffect(() => {
+    const previous = priorFit.current;
+    priorFit.current = { key: memoryKey, camera: initialCamera };
+    const previousFit = previous.key === memoryKey
+      ? previous.camera
+      : cameraMemory.get(memoryKey)?.fittedCamera;
+    setCamera((current) => resizeCamera(current, previousFit, initialCamera));
+  }, [memoryKey, initialCamera, setCamera]);
   useEffect(() => {
     if (viewState.key === memoryKey)
-      cameraMemory.set(memoryKey, { camera: viewState.camera, width, focusId });
-  }, [viewState, memoryKey, width, focusId]);
+      cameraMemory.set(memoryKey, {
+        camera: viewState.camera, width, focusId, fittedCamera: initialCamera,
+      });
+  }, [viewState, memoryKey, width, focusId, initialCamera]);
   useEffect(() => {
     const element = drawingRef.current;
     const wheel = (e) => {

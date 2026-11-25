@@ -45,11 +45,24 @@ Edits and added photos are session-only demonstration data, not shared hotel rec
 
 - `src/App.jsx` assembles providers and the current screen. `src/app/` owns shared state, navigation and preferences.
 - `src/pages/`, `src/components/` and `src/changes/` hold screens, reused controls and editing forms. `src/media/` handles optional photos.
-- `src/data/amsterdam-{lower,ground,upper}.json` holds traced geometry and source metadata. `src/data/amsterdam.js` adapts it into map shapes, hotel levels and sample space records.
+- `src/data/amsterdam-{lower,ground,upper}.json` holds traced geometry and source metadata. `src/data/amsterdam.js` adapts it into map shapes, hotel levels and sample space records. `amsterdam-display.json` contains generated presentation outlines; it does not replace the original traces.
 - `src/data/fixtures.js` supplies the remaining sample data. `src/data/inventory.js` owns inventory changes and totals, with its checks alongside it.
 - `src/map/` provides the shared renderer, camera and draggable minimap. Hotel geometry is data; interaction code is reused across floors. The three stylesheets cover shared styling, catalogue screens and floor plans.
 
 When updating a drawing, change its geometry data and provenance together, preserve stable space IDs where the same physical space remains, and retain uncertainty notes. Review the simplified shape against the source, then run the build and inventory checks. Check floor switching, search, individual-space opening and selection totals before publishing a new review version.
+
+## Regenerating map outlines
+
+After editing the traced geometry, run from the repository root:
+
+```bash
+python3 -m venv .venv-map
+.venv-map/bin/pip install Shapely==2.1.2
+.venv-map/bin/python scripts/generate-map-display.py
+.venv-map/bin/python scripts/generate-map-display.py --check
+```
+
+Python and Shapely are needed only when regenerating these data, never by the browser or deployment. Commit the generated `src/data/amsterdam-display.json` with the trace changes; `npm test` detects stale source data. The generator joins narrow partition gaps, adds a consistent six-coordinate-unit display perimeter, and normalises enclosed lift/shaft gaps where there is room to do so. Lower roofs remain context. Edge-adjacent shafts retain their source holes to avoid cutting narrow corridors. This is a visual simplification, not a wall-thickness measurement; source room boundaries and recorded areas remain unchanged.
 
 ## Publishing
 

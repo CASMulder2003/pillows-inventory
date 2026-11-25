@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
+import { existsSync } from "node:fs";
 import { build } from "vite";
 import postcss from "postcss";
 import { transform } from "lightningcss";
@@ -96,6 +97,10 @@ test("production build preserves usable light/dark colours and GitHub Pages asse
   assert.ok(links.some((url) => url.endsWith(".js")) && links.some((url) => url.endsWith(".css")));
   for (const url of links) {
     assert.ok(url.startsWith(base), `Asset escapes the Pages base: ${url}`);
-    assert.ok(output.some((asset) => asset.fileName === url.slice(base.length)), `Missing built asset: ${url}`);
+    const assetName = url.slice(base.length);
+    // Vite copies public assets directly; its in-memory build output excludes them.
+    const publicAsset = new URL(`../../public/${assetName}`, import.meta.url);
+    assert.ok(output.some((asset) => asset.fileName === assetName) || existsSync(publicAsset),
+      `Missing built asset: ${url}`);
   }
 });

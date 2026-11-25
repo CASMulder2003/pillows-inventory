@@ -1,5 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import displayGeometry from "./amsterdam-display.json" with { type: "json" };
 import { buildFloorPlan } from "../map/geometry.js";
 import { amsterdamDrawings } from "./amsterdam.js";
 import {
@@ -728,7 +731,7 @@ test("Amsterdam plan coordinates include the full architectural context", () => 
   }
 });
 
-test("courtyard and lift-core holes keep their source geometry after translation", () => {
+test("courtyard and lift-core holes preserve their chosen geometry after translation", () => {
   const data = createInitialData();
   let holesChecked = 0;
   for (const drawing of amsterdamDrawings) {
@@ -736,7 +739,7 @@ test("courtyard and lift-core holes keep their source geometry after translation
     const records = drawing.spaces.map((record) => [record, plan.shapes.find((shape) => shape.spaceId === record.id)]);
     records.push(...(drawing.context || []).map((record, index) => [record, plan.context[index]]));
     for (const [record, shape] of records.filter(([record]) => record.holes?.length)) {
-      const sourceRings = [record.points, ...record.holes];
+      const sourceRings = [record.points, ...(drawing.displayHoles?.[record.id] || record.holes)];
       const rings = shape.path.split(/(?=M)/).filter(Boolean).map(svgVertices);
       assert.equal(rings.length, sourceRings.length);
       assert.equal((shape.path.match(/Z/g) || []).length, sourceRings.length);
@@ -892,4 +895,95 @@ test("traced space boundaries do not cross, overlap or use touching hole edges",
       }
     }
   }
+});
+
+test("generated Amsterdam display geometry matches its source drawings", () => {
+  const hash = createHash("sha256");
+  for (const part of ["lower", "ground", "upper"])
+    hash.update(readFileSync(new URL(`./amsterdam-${part}.json`, import.meta.url)));
+  assert.equal(displayGeometry.sourceHash, hash.digest("hex"),
+    "Drawing data changed: run python scripts/generate-map-display.py");
+  assert.equal(Object.keys(displayGeometry.levels).length, 8);
+  for (const drawing of amsterdamDrawings) {
+    assert.equal((drawing.displayOutline.match(/M/g) || []).length, 1,
+      `${drawing.id}: narrow partition gaps must not split the building perimeter`);
+    assert.ok(svgVertices(drawing.displayOutline).length >= 4);
+  }
+});
+
+function distanceToOutline(point, path) {
+  const ring = svgVertices(path);
+  return Math.min(...ring.map((a, index) => {
+    const b = ring[(index + 1) % ring.length];
+    const dx = b[0] - a[0], dy = b[1] - a[1];
+    const t = Math.max(0, Math.min(1,
+      ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+    return Math.hypot(point[0] - a[0] - t * dx, point[1] - a[1] - t * dy);
+  }));
+}
+
+test("exposed room edges have a consistent perimeter gap across all eight floors", () => {
+  const data = createInitialData();
+  const samples = [
+    ["B2", "ams-B2-parking-2", "top"], ["LG", "ams-007", "left"],
+    ["G", "ams-110", "left"], ["M", "ams-202", "top"],
+    ...["left", "right", "top", "bottom"].map((side) => ["1", "ams-1-vrolik", side]),
+    ["1", "ams-310", "top"], ["1", "ams-301", "bottom"], ["1", "ams-301", "right"],
+    ["2", "ams-415", "left"], ["2", "ams-420", "top"],
+    ["3", "ams-501", "top"], ["R", "ams-R-west-roof", "left"],
+  ];
+  for (const [floor, id, side] of samples) {
+    const plan = buildFloorPlan(getScope(data, "ams", floor), floor, "ams");
+    const { x, y, width, height } = plan.shapes.find((shape) => shape.spaceId === id).bounds;
+    const point = side === "left" ? [x, y + height / 2]
+      : side === "right" ? [x + width, y + height / 2]
+      : side === "top" ? [x + width / 2, y] : [x + width / 2, y + height];
+    assert.ok(Math.abs(distanceToOutline(point, plan.outline) - 6) < 0.02,
+      `${id} ${side}: perimeter should be six drawing units away`);
+  }
+});
+
+test("Van Oost lift has even clearance while shared-edge holes retain their source rings", () => {
+  const data = createInitialData();
+  const plan = buildFloorPlan(getScope(data, "ams", "1"), "1", "ams");
+  const room = plan.shapes.find((shape) => shape.spaceId === "ams-1-vrolik");
+  const lift = plan.shapes.find((shape) => shape.spaceId === "ams-1-kitchen-lift").bounds;
+  const hole = svgVertices(room.path.split(/(?=M)/)[1]);
+  const xs = hole.map(([x]) => x), ys = hole.map(([, y]) => y);
+  assert.deepEqual([
+    lift.x - Math.min(...xs), Math.max(...xs) - lift.x - lift.width,
+    lift.y - Math.min(...ys), Math.max(...ys) - lift.y - lift.height,
+  ], [6, 6, 6, 6]);
+  const first = amsterdamDrawings.find((drawing) => drawing.id === "1");
+  assert.deepEqual(first.spaces.find((space) => space.id === "ams-1-vrolik").holes,
+    [[[296, 856], [353, 856], [353, 927], [296, 927]]], "keep the original source hole");
+  assert.equal(first.displayHoles["ams-1-lift-lobby"], undefined,
+    "do not enlarge a shared-edge shaft into the narrow corridor");
+  const ground = amsterdamDrawings.find((drawing) => drawing.id === "G");
+  assert.deepEqual(ground.displayHoles, {});
+  const second = amsterdamDrawings.find((drawing) => drawing.id === "2");
+  const corridor = second.spaces.find((space) => space.id === "ams-2-corridor-central");
+  assert.deepEqual(second.displayHoles[corridor.id][1], corridor.holes[1]);
+});
+
+
+test("resizing a fitted sparse floor keeps its wing visible without resetting manual views", async () => {
+  const { fitFloorCamera, resizeCamera, clampCamera } = await import("../map/useMapCamera.js");
+  const bounds = { x: 700, y: 100, width: 200, height: 500 };
+  const plan = { width: 1000, height: 1000, sourceBased: true, shapes: [{ bounds }] };
+  const portrait = { width: 1000, height: 1600 };
+  const landscape = { width: 1600, height: 1000 };
+  const previousFit = fitFloorCamera(plan, portrait);
+  const nextFit = fitFloorCamera(plan, landscape);
+  assert.ok(landscape.height / previousFit.zoom < bounds.height,
+    "retaining the old zoom would clip the wing after resizing");
+  const resized = clampCamera(resizeCamera(previousFit, previousFit, nextFit), plan, landscape);
+  const halfWidth = landscape.width / resized.zoom / 2;
+  const halfHeight = landscape.height / resized.zoom / 2;
+  assert.ok(resized.x - halfWidth <= bounds.x && resized.x + halfWidth >= bounds.x + bounds.width);
+  assert.ok(resized.y - halfHeight <= bounds.y && resized.y + halfHeight >= bounds.y + bounds.height);
+  const manual = { x: 600, y: 450, zoom: 4 };
+  assert.deepEqual(clampCamera(resizeCamera(manual, previousFit, nextFit), plan, landscape), manual);
+  assert.deepEqual(resizeCamera(nextFit, nextFit, previousFit), previousFit,
+    "a fitted view also adapts when the viewport returns to its previous size");
 });

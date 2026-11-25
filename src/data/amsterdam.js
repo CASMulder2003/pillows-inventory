@@ -1,11 +1,14 @@
 import lower from "./amsterdam-lower.json" with { type: "json" };
 import ground from "./amsterdam-ground.json" with { type: "json" };
 import upper from "./amsterdam-upper.json" with { type: "json" };
+import display from "./amsterdam-display.json" with { type: "json" };
 
 // Coordinates are traced from the supplied drawings. They are data, not UI code.
 // Keep original room identifiers; floor numbering and room numbering are independent.
 const order = ["B2", "LG", "G", "M", "1", "2", "3", "R"];
+// Display walls are generated separately; source coordinates remain available for review.
 export const amsterdamDrawings = [...lower, ...ground, ...upper]
+  .map((level) => ({ ...level, ...display.levels[level.id] }))
   .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 export const amsterdamLevels = amsterdamDrawings.map((level) => ({
   id: level.id, label: level.label, shortLabel: level.shortLabel,
@@ -129,7 +132,7 @@ export function buildAmsterdamPlan(spaces, levelId) {
   const records = drawing.spaces.filter((record) => spaces.some((space) => space.id === record.id));
   const points = [
     ...drawing.spaces.flatMap((record) => [record.points, ...(record.holes || [])].flat()),
-    ...pathPoints(drawing.outline),
+    ...pathPoints(drawing.displayOutline || drawing.outline),
     ...(drawing.context || []).flatMap((region) => [
       ...(region.points
         ? [region.points, ...(region.holes || [])].flat()
@@ -150,12 +153,12 @@ export function buildAmsterdamPlan(spaces, levelId) {
       spaceId: record.id, shortLabel: record.shortLabel || record.name,
       labelLines: record.labelLines,
       x: anchor[0] + dx, y: anchor[1] + dy, bounds,
-      path: [record.points, ...(record.holes || [])].map((ring) => ringPath(ring, dx, dy)).join(""),
+      path: [record.points, ...(drawing.displayHoles?.[record.id] || record.holes || [])].map((ring) => ringPath(ring, dx, dy)).join(""),
     };
   });
   return {
     width: right - left, height: bottom - top, shapes, labels: [],
-    outline: translatePath(drawing.outline, dx, dy), sourceBased: true,
+    outline: translatePath(drawing.displayOutline || drawing.outline, dx, dy), sourceBased: true,
     source: { drawing: drawing.sourceDrawing, date: drawing.sourceDate, file: drawing.sourceFile },
     sourceNote: [drawing.geometryNote || drawing.geometryStatus, noteText(drawing)].filter(Boolean).join(" "),
     context: (drawing.context || []).map((region) => ({

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import {
   hotels,
   createInitialData,
@@ -56,10 +56,33 @@ export function WorkspaceProvider({ children }) {
   const [planFocus, setPlanFocus] = useState(null);
   const [planPage, setPlanPage] = useState(0);
   const preferences = usePreferences();
-  const navigation = useNavigation(hotelId);
-  const { route, visit, back, resetNavigation, setNotice } = navigation;
   const allowedHotels = hotelsForAccess(access);
   const allowedHotelIds = allowedHotels.map((hotel) => hotel.id);
+  const navigationSnapshot = useMemo(() => ({
+    hotelId, filters, selected, scopeIds, view, sort, selectMode,
+    floor, planQuery, planFocus, planPage,
+  }), [hotelId, filters, selected, scopeIds, view, sort, selectMode,
+    floor, planQuery, planFocus, planPage]);
+  function restoreNavigationSnapshot(saved) {
+    setHotel(saved.hotelId);
+    setFilters(saved.filters);
+    setSelected(saved.selected);
+    setScopeIds(saved.scopeIds);
+    setView(saved.view);
+    setSort(saved.sort);
+    setSelectMode(saved.selectMode);
+    setFloor(saved.floor);
+    setPlanQuery(saved.planQuery);
+    setPlanFocus(saved.planFocus);
+    setPlanPage(saved.planPage);
+  }
+  const navigation = useNavigation(hotelId, {
+    snapshot: navigationSnapshot,
+    restoreSnapshot: restoreNavigationSnapshot,
+    canRestoreSnapshot: (saved) => saved && (allowedHotelIds.includes(saved.hotelId) ||
+      saved.hotelId === "all" && allowedHotels.length > 1),
+  });
+  const { route, visit, back, resetNavigation } = navigation;
   const accessibleData = {
     ...data,
     spaces: data.spaces.filter((space) =>
@@ -93,17 +116,14 @@ export function WorkspaceProvider({ children }) {
       [route.page]: { ...previous[route.page], [key]: value },
     }));
 
-  function resetHotel(id) {
-    setHotel(id);
-    setFloor(id === "ams" ? "G" : "1");
-    setPlanPage(0);
-    setSelectMode(false);
-    setPlanQuery("");
-    setPlanFocus(null);
-    setSelected([]);
-    setScopeIds([]);
-    setFilters(structuredClone(initialFilters));
-    resetNavigation(id);
+  function resetHotel(id, options) {
+    const next = {
+      ...navigationSnapshot, hotelId: id, floor: id === "ams" ? "G" : "1",
+      planPage: 0, selectMode: false, planQuery: "", planFocus: null,
+      selected: [], scopeIds: [], filters: structuredClone(initialFilters),
+    };
+    restoreNavigationSnapshot(next);
+    resetNavigation(next, options);
   }
   function switchHotel(id) {
     if (
@@ -117,6 +137,7 @@ export function WorkspaceProvider({ children }) {
     setAccess(nextAccess);
     resetHotel(
       available.some((item) => item.id === hotelId) ? hotelId : available[0].id,
+      { invalidate: true },
     );
   }
   const openSpace = (id) => visit({ page: "space", id, tab: "contents" });
@@ -138,11 +159,8 @@ export function WorkspaceProvider({ children }) {
   function commit(request) {
     // applyChange returns a new snapshot only after the entire request passes validation.
     setData(applyChange(data, request));
-    back();
-    setNotice(
-      messages[request.action] ||
-        "Change saved. Quantities and history are updated.",
-    );
+    back({ notice: messages[request.action] ||
+      "Change saved. Quantities and history are updated." });
   }
   const toggle = (id) =>
     setSelected((previous) =>
@@ -169,7 +187,7 @@ export function WorkspaceProvider({ children }) {
   }
   function logout() {
     setSignedOut(true);
-    resetNavigation(hotelId);
+    resetNavigation(navigationSnapshot, { invalidate: true });
   }
   const value = {
     ...navigation,
