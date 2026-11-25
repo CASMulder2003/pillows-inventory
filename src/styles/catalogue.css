@@ -176,23 +176,23 @@
 }
 
 #pillows-workspace .pw-thumb.ivory {
-  background: light-dark(#eee7d8, #544b3d);
+  background: var(--pw-swatch-ivory);
 }
 
 #pillows-workspace .pw-thumb.stone {
-  background: light-dark(#d8d5ce, #4d4b45);
+  background: var(--pw-swatch-stone);
 }
 
 #pillows-workspace .pw-thumb.ceiling {
-  background: light-dark(#f6f4eb, #58564c);
+  background: var(--pw-swatch-ceiling);
 }
 
 #pillows-workspace .pw-thumb.clay {
-  background: light-dark(#c9b7aa, #5e4e44);
+  background: var(--pw-swatch-clay);
 }
 
 #pillows-workspace .pw-thumb.grey {
-  background: light-dark(#cbc7bf, #55514a);
+  background: var(--pw-swatch-grey);
 }
 
 #pillows-workspace .pw-compact .pw-table td {

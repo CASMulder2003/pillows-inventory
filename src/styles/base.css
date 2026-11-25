@@ -3,20 +3,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Lato:wght@400;700&display=swap");
 
 #pillows-workspace {
-  --pw-paper: light-dark(#fff, #23221f);
-  --pw-wash: light-dark(#f7f5f1, #2b2a27);
-  --pw-canvas: light-dark(#f1eee7, #302e29);
-  --pw-line: light-dark(#ded9cf, #514c42);
-  --pw-wall: light-dark(#746e63, #b1a99b);
-  --pw-ink: light-dark(#262522, #f3efe6);
-  --pw-muted: light-dark(#666158, #bfb9ac);
-  --pw-gold: light-dark(#b2854f, #c6a477);
-  --pw-link: light-dark(#39352e, #eee5d7);
-  --pw-selected: light-dark(#f0e4d2, #4a3d2b);
-  --pw-danger: light-dark(#8c3c2c, #f2b4a6);
-  --pw-danger-bg: light-dark(#f9ece8, #42312b);
-  --pw-good: light-dark(#3b644e, #b2d3bf);
-  --pw-good-bg: light-dark(#edf3ee, #2d3c32);
+  color-scheme: light;
+  --pw-shadow: #26252220;
+  --pw-soft-shadow: #2625221a;
+  --pw-image-bg: #f2efe9;
+  --pw-swatch-ivory: #eee7d8;
+  --pw-swatch-stone: #d8d5ce;
+  --pw-swatch-ceiling: #f6f4eb;
+  --pw-swatch-clay: #c9b7aa;
+  --pw-swatch-grey: #cbc7bf;
+  --pw-viewport-fill: #b2854f33;
+  --pw-paper: #fff;
+  --pw-wash: #f7f5f1;
+  --pw-canvas: #f1eee7;
+  --pw-line: #ded9cf;
+  --pw-wall: #746e63;
+  --pw-ink: #262522;
+  --pw-muted: #666158;
+  --pw-gold: #b2854f;
+  --pw-link: #39352e;
+  --pw-selected: #f0e4d2;
+  --pw-danger: #8c3c2c;
+  --pw-danger-bg: #f9ece8;
+  --pw-good: #3b644e;
+  --pw-good-bg: #edf3ee;
   color: var(--pw-ink);
   background: var(--pw-paper);
   font:
@@ -26,6 +36,34 @@
   border: 1px solid var(--pw-line);
   text-align: left;
   isolation: isolate;
+}
+
+/* Explicit tokens also survive production CSS transformation. */
+#pillows-workspace[data-theme="dark"] {
+  color-scheme: dark;
+  --pw-paper: #23221f;
+  --pw-wash: #2b2a27;
+  --pw-canvas: #302e29;
+  --pw-line: #514c42;
+  --pw-wall: #b1a99b;
+  --pw-ink: #f3efe6;
+  --pw-muted: #bfb9ac;
+  --pw-gold: #c6a477;
+  --pw-link: #eee5d7;
+  --pw-selected: #4a3d2b;
+  --pw-danger: #f2b4a6;
+  --pw-danger-bg: #42312b;
+  --pw-good: #b2d3bf;
+  --pw-good-bg: #2d3c32;
+  --pw-shadow: #0006;
+  --pw-soft-shadow: #00000040;
+  --pw-image-bg: #1a1917;
+  --pw-swatch-ivory: #544b3d;
+  --pw-swatch-stone: #4d4b45;
+  --pw-swatch-ceiling: #58564c;
+  --pw-swatch-clay: #5e4e44;
+  --pw-swatch-grey: #55514a;
+  --pw-viewport-fill: #c6a47733;
 }
 
 #pillows-workspace * {
@@ -483,7 +521,7 @@
   top: 100%;
   background: var(--pw-paper);
   border: 1px solid var(--pw-line);
-  box-shadow: 0 6px 20px light-dark(#26252220, #0006);
+  box-shadow: 0 6px 20px var(--pw-shadow);
   padding: 7px;
   z-index: 5;
   max-height: 360px;
@@ -548,7 +586,7 @@
   padding: 8px;
   background: var(--pw-paper);
   border: 1px solid var(--pw-line);
-  box-shadow: 0 6px 16px light-dark(#2625221a, #00000040);
+  box-shadow: 0 6px 16px var(--pw-soft-shadow);
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -625,7 +663,7 @@
   padding: 5px;
   border: 1px solid var(--pw-line);
   border-radius: 14px;
-  background: light-dark(#f2efe9, #1a1917);
+  background: var(--pw-image-bg);
 }
 
 #pillows-workspace .pw-theme-option {

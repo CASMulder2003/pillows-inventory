@@ -399,7 +399,7 @@
 }
 
 #pillows-workspace .pw-minimap .pw-viewport {
-  fill: light-dark(#b2854f33, #c6a47733);
+  fill: var(--pw-viewport-fill);
   stroke: var(--pw-gold);
   stroke-width: 1.5;
   vector-effect: non-scaling-stroke;

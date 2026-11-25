@@ -32,7 +32,7 @@ const screens = {
 };
 
 function Workspace() {
-  const { route, signedOut, setSignedOut, appearance } = useWorkspace();
+  const { route, signedOut, setSignedOut, resolvedAppearance } = useWorkspace();
   const Screen = screens[route.page] || Overview;
   // A new record gets a fresh form draft; changing unrelated shared state does not reset it.
   const screenKey = [
@@ -49,9 +49,7 @@ function Workspace() {
   return (
     <div
       id="pillows-workspace"
-      style={{
-        colorScheme: appearance === "system" ? "light dark" : appearance,
-      }}
+      data-theme={resolvedAppearance}
     >
       {signedOut ? (
         <div className="pw-signed-out">
