@@ -1,24 +1,15 @@
 /* One reusable map workspace: controls stay still while the camera moves. */
 
 #pillows-workspace .pw-plan {
-  --pw-map-guest: #fffaf1;
-  --pw-map-public: #e5c593;
-  --pw-map-circulation: #c6d7e7;
-  --pw-map-service: #d8c9db;
-  --pw-map-outdoor: #bdd3b2;
+  --pw-map-guest: var(--pw-paper);
+  --pw-map-public: color-mix(in srgb, var(--pw-gold) 14%, var(--pw-paper));
+  --pw-map-circulation: var(--pw-canvas);
+  --pw-map-service: var(--pw-wash);
+  --pw-map-outdoor: var(--pw-good-bg);
   border: 1px solid var(--pw-line);
   border-radius: 12px;
   background: var(--pw-paper);
   min-width: 0;
-}
-
-/* Category hues remain distinct on the map and in its key in either theme. */
-#pillows-workspace[data-theme="dark"] .pw-plan {
-  --pw-map-guest: #494238;
-  --pw-map-public: #695238;
-  --pw-map-circulation: #304e66;
-  --pw-map-service: #55425d;
-  --pw-map-outdoor: #3b5435;
 }
 
 #pillows-workspace .pw-plan-toolbar {
