@@ -6,8 +6,7 @@ import { buildFloorPlan } from "../map/geometry.js";
 import { initialFilters } from "../app/selectors.js";
 import { useWorkspace } from "../app/WorkspaceContext.jsx";
 
-// Summary links reset the destination filters, so their numbers always match
-// the catalogue or issue list they open.
+// Overview navigation resets destination filters to show the full hotel scope.
 function useOverviewActions() {
   const { nav, setScopeIds, setFilters, setView } = useWorkspace();
   return {
@@ -30,12 +29,11 @@ function useOverviewActions() {
   };
 }
 
-function SummaryMetric({ value, label, action, onClick, attention = false }) {
+function SummaryMetric({ value, label, attention = false }) {
   return (
     <div className={`pw-dashboard-metric${attention ? " attention" : ""}`}>
       <span className="pw-metric-label">{label}</span>
       <strong className="pw-metric-value">{value.toLocaleString("en-GB")}</strong>
-      <Button link className="pw-metric-action" onClick={onClick}>{action}</Button>
     </div>
   );
 }
@@ -75,9 +73,9 @@ function CollectionOverview() {
       <Heading title="Your hotels" subtitle="A shared catalogue. A clear view of every property."
         actions={<Button onClick={() => actions.catalogue()}>Combined catalogue</Button>} />
       <div className="pw-dashboard-metrics" aria-label="Collection totals">
-        <SummaryMetric value={properties.reduce((total, hotel) => total + hotel.objects, 0)} label="Installed objects" action="View objects" onClick={() => actions.catalogue("object")} />
-        <SummaryMetric value={totals.filter((row) => row.kind === "finish").length} label="Finish specifications" action="View finishes" onClick={() => actions.catalogue("finish")} />
-        <SummaryMetric value={openIssues.length} label="Outstanding issues" action="View open issues" attention={openIssues.length > 0} onClick={actions.issues} />
+        <SummaryMetric value={properties.reduce((total, hotel) => total + hotel.objects, 0)} label="Installed objects" />
+        <SummaryMetric value={totals.filter((row) => row.kind === "finish").length} label="Finish specifications" />
+        <SummaryMetric value={openIssues.length} label="Outstanding issues" attention={openIssues.length > 0} />
       </div>
       <div className="pw-sectionbar pw-collection-heading">
         <h2>Choose a property</h2>
@@ -121,12 +119,11 @@ export function Overview() {
         actions={<Button onClick={() => actions.spaces("list")}>Space list</Button>} />
       <div className="pw-dashboard-metrics" aria-label="Hotel totals">
         <SummaryMetric value={hotelSpaces.reduce((total, space) => total + countObjects(space), 0)}
-          label="Installed objects" action="View objects" onClick={() => actions.catalogue("object")} />
+          label="Installed objects" />
         <SummaryMetric value={totals.filter((row) => row.kind === "finish").length}
-          label="Finish specifications" action="View finishes" onClick={() => actions.catalogue("finish")} />
+          label="Finish specifications" />
         <SummaryMetric value={openIssues.length} label="Outstanding issues"
-          action="View open issues"
-          attention={openIssues.length > 0} onClick={actions.issues} />
+          attention={openIssues.length > 0} />
       </div>
       <div className="pw-dashboard-grid">
         <section className="pw-dashboard-plan" aria-label="Explore the property">

@@ -179,14 +179,14 @@
       },
       {
         "id": "ams-1-vrolik",
-        "name": "Vrolik",
+        "name": "Van Oost",
         "sourceName": "vrolik",
         "drawingCode": "1.001",
         "type": "Public space",
         "area": 347.0,
         "points": [[165, 380], [386, 380], [386, 1116], [165, 1116]],
         "label": [270, 694],
-        "shortLabel": "Vrolik",
+        "shortLabel": "Van Oost",
         "holes": [[[296, 856], [353, 856], [353, 927], [296, 927]]]
       },
       {
@@ -411,7 +411,7 @@
         "points": [[1063, 423], [1118, 423], [1118, 453], [1063, 453]],
         "label": [1090, 438],
         "shortLabel": "Lift",
-        "notes": "The source repeats lift code 1.L005 at the Vrolik kitchen lift."
+        "notes": "The source repeats lift code 1.L005 at the Van Oost kitchen lift."
       },
       {
         "id": "ams-1-stair-external",
@@ -560,7 +560,7 @@
         "drawingCode": "2.409",
         "type": "Guest room",
         "area": 29.4,
-        "points": [[812, 1064], [847, 1064], [847, 1007], [930, 1007], [930, 1054], [979, 1054], [979, 1116], [812, 1116]],
+        "points": [[812, 1064], [847, 1064], [847, 1007], [930, 1007], [930, 1056], [979, 1056], [979, 1116], [812, 1116]],
         "label": [900, 1090],
         "shortLabel": "409"
       },
@@ -571,7 +571,7 @@
         "drawingCode": "2.410",
         "type": "Guest room",
         "area": 20.2,
-        "points": [[937, 1007], [1054, 1007], [1054, 1116], [986, 1116], [986, 1055], [937, 1055]],
+        "points": [[937, 1007], [1054, 1007], [1054, 1116], [986, 1116], [986, 1048], [937, 1048]],
         "label": [1019, 1084],
         "shortLabel": "410"
       },
@@ -1294,10 +1294,9 @@
         "drawingCode": "",
         "type": "Outdoor",
         "area": null,
-        "points": [[396, 939], [859, 939], [859, 1120], [396, 1120]],
+        "points": [[396, 939], [513, 939], [513, 1027], [741, 1027], [741, 939], [859, 939], [859, 1120], [396, 1120]],
         "label": [470, 1057],
-        "shortLabel": "South roof",
-        "holes": [[[513, 939], [741, 939], [741, 1027], [513, 1027]]]
+        "shortLabel": "South roof"
       },
       {
         "id": "ams-R-central-roof",

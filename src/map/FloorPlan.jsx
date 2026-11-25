@@ -462,21 +462,13 @@ export function FloorPlan({
         </div>
       </div>
       <div className="pw-plan-caption">
-        {plan.sourceBased && (
-          <div className="pw-plan-colour-key" aria-label="Space colours">
-            {[["guest", "Guest rooms"], ["public", "Shared spaces"], ["circulation", "Circulation"], ["service", "Service"], ["outdoor", "Outdoor"]].map(([kind, label]) => (
-              <span key={kind}><i className={`pw-plan-key-${kind}`} aria-hidden="true" />{label}</span>
-            ))}
-          </div>
-        )}
-        <span className="pw-map-issue-key"><b>!</b> Outstanding issue</span>
         <details className="pw-plan-details">
           <summary>Plan details</summary>
           <p>{plan.sourceBased
             ? `${plan.source?.drawing || "Supplied architectural plan"}${plan.source?.date ? ` · ${plan.source.date}` : ""}`
             : "Illustrative layout for testing the catalogue."}</p>
           {plan.sourceNote && <p>{plan.sourceNote}</p>}
-          <p>Click a space to open its contents. Drag when zoomed in, or focus the map and use arrow keys. Ctrl + scroll also zooms.</p>
+          <p>Click a space to open its contents. A red ! marks an outstanding issue. Drag when zoomed in, or focus the map and use arrow keys. Ctrl + scroll also zooms.</p>
           {selected.length > 0 && <p>Gold fill shows selected spaces.</p>}
         </details>
       </div>

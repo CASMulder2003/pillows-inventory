@@ -169,7 +169,8 @@
 
 #pillows-workspace .pw-plan-wall {
   stroke: var(--pw-wall);
-  stroke-width: 2.5;
+  stroke-width: 1.25;
+  stroke-linejoin: round;
   fill: none;
   vector-effect: non-scaling-stroke;
 }
@@ -178,6 +179,7 @@
   fill: var(--pw-paper);
   stroke: var(--pw-wall);
   stroke-width: 1;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   transition: fill 120ms;
 }
@@ -471,55 +473,6 @@
   border-top: 1px solid var(--pw-line);
   color: var(--pw-muted);
   font-size: 12px;
-}
-
-#pillows-workspace .pw-plan-colour-key {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-}
-
-#pillows-workspace .pw-plan-colour-key > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 13px;
-}
-
-#pillows-workspace .pw-plan-colour-key i {
-  width: 20px;
-  height: 14px;
-  flex: none;
-  border: 1px solid var(--pw-wall);
-  border-radius: 3px;
-}
-
-#pillows-workspace .pw-plan-key-guest {
-  background: var(--pw-map-guest);
-}
-
-#pillows-workspace .pw-plan-key-public {
-  background: var(--pw-map-public);
-}
-
-#pillows-workspace .pw-plan-key-circulation {
-  background: var(--pw-map-circulation);
-}
-
-#pillows-workspace .pw-plan-key-service {
-  background: var(--pw-map-service);
-}
-
-#pillows-workspace .pw-plan-key-outdoor {
-  background: var(--pw-map-outdoor);
-}
-
-#pillows-workspace .pw-map-issue-key {
-  white-space: nowrap;
-}
-
-#pillows-workspace .pw-map-issue-key b {
-  color: var(--pw-alert);
 }
 
 #pillows-workspace .pw-plan-details {

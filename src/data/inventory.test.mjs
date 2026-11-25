@@ -844,3 +844,52 @@ test("new finishes validate surface names, products, scope and area without chan
   const zero = applyChange(data, { ...request, area: 0 });
   assert.equal(spaceById(zero, "ams-101").finishes.at(-1).area, 0);
 });
+
+test("traced space boundaries do not cross, overlap or use touching hole edges", () => {
+  const cross = ([ax, ay], [bx, by], [cx, cy]) => (bx - ax) * (cy - ay) - (by - ay) * (cx - ax);
+  const onEdge = (p, a, b) => Math.abs(cross(a, b, p)) < 1e-8 &&
+    p[0] >= Math.min(a[0], b[0]) && p[0] <= Math.max(a[0], b[0]) &&
+    p[1] >= Math.min(a[1], b[1]) && p[1] <= Math.max(a[1], b[1]);
+  const edges = (ring) => ring.map((a, i) => [a, ring[(i + 1) % ring.length]]);
+  const crosses = ([a, b], [c, d]) => cross(a, b, c) * cross(a, b, d) < 0 &&
+    cross(c, d, a) * cross(c, d, b) < 0;
+  const meets = (a, b) => crosses(a, b) || a.some((p) => onEdge(p, ...b)) || b.some((p) => onEdge(p, ...a));
+  const boundary = (p, ring) => edges(ring).some(([a, b]) => onEdge(p, a, b));
+  const insideRing = ([x, y], ring) => {
+    let inside = false;
+    for (const [[ax, ay], [bx, by]] of edges(ring))
+      if ((ay > y) !== (by > y) && x < (bx - ax) * (y - ay) / (by - ay) + ax) inside = !inside;
+    return inside;
+  };
+  const rings = (space) => [space.points, ...(space.holes || [])];
+  const inside = (p, space) => !rings(space).some((ring) => boundary(p, ring)) &&
+    insideRing(p, space.points) && !(space.holes || []).some((ring) => insideRing(p, ring));
+  for (const drawing of amsterdamDrawings) {
+    for (const space of drawing.spaces) {
+      for (const ring of rings(space)) {
+        const segments = edges(ring);
+        for (let i = 0; i < segments.length; i++) {
+          assert.notDeepEqual(...segments[i], `${space.id} has a zero-length edge`);
+          for (let j = i + 2; j < segments.length; j++) {
+            if (i === 0 && j === segments.length - 1) continue;
+            assert.ok(!meets(segments[i], segments[j]), `${space.id} has a self-intersecting boundary`);
+          }
+        }
+      }
+      for (const hole of space.holes || []) {
+        assert.ok(insideRing(hole[0], space.points), `${space.id} has a hole outside its boundary`);
+        assert.ok(!edges(hole).some((a) => edges(space.points).some((b) => meets(a, b))),
+          `${space.id} has a touching hole; an edge cut-out must be part of its outer ring`);
+      }
+    }
+    for (let i = 0; i < drawing.spaces.length; i++) {
+      const a = drawing.spaces[i];
+      for (const b of drawing.spaces.slice(i + 1)) {
+        const aEdges = rings(a).flatMap(edges), bEdges = rings(b).flatMap(edges);
+        assert.ok(!aEdges.some((ea) => bEdges.some((eb) => crosses(ea, eb))) &&
+          !a.points.some((p) => inside(p, b)) && !b.points.some((p) => inside(p, a)),
+        `${a.id} and ${b.id} overlap`);
+      }
+    }
+  }
+});

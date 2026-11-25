@@ -222,6 +222,8 @@
   opacity: 1;
 }
 
+#pillows-workspace .pw-check-target { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+
 #pillows-workspace input[type="checkbox"] {
   width: 17px;
   height: 17px;
@@ -575,6 +577,7 @@
 }
 
 #pillows-workspace .pw-footer {
+  background: var(--pw-paper);
   border-top: 1px solid var(--pw-line);
   padding: 14px 32px;
   display: flex;
@@ -779,6 +782,10 @@
   #pillows-workspace .pw-heading h1 { font-size: 32px; }
   #pillows-workspace .pw-footer { padding: 14px 16px; flex-wrap: wrap; }
 }
+@media (max-width: 900px), (pointer: coarse) {
+  #pillows-workspace .pw-check-target { min-width: 44px; min-height: 44px; }
+}
+
 @media (pointer: coarse) {
   #pillows-workspace button,
   #pillows-workspace select,

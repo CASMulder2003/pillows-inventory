@@ -224,8 +224,9 @@
 
 #pillows-workspace .pw-room-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: 26px;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
 }
 
 #pillows-workspace .pw-room-metrics,
@@ -289,13 +290,12 @@
 }
 
 #pillows-workspace .pw-surface {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--pw-line);
+  padding: 16px 18px;
+  background: var(--pw-paper);
 }
 
-#pillows-workspace .pw-surface:first-of-type {
-  padding-top: 0;
-}
+#pillows-workspace .pw-surface + .pw-surface { border-top: 1px solid var(--pw-line); }
+#pillows-workspace .pw-surface:last-child { border-radius: 0 0 10px 10px; }
 
 #pillows-workspace .pw-surface-heading,
 #pillows-workspace .pw-surface-meta {
@@ -307,13 +307,13 @@
 }
 
 #pillows-workspace .pw-surface-heading {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 #pillows-workspace .pw-surface-meta {
   font-size: 13px;
   color: var(--pw-muted);
-  padding-left: 54px;
+  padding-left: 58px;
   margin-top: 2px;
 }
 
@@ -624,22 +624,54 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Room panels share one visual rhythm without changing the reusable record displays. */
+#pillows-workspace .pw-space-detail .pw-heading { margin-bottom: 10px; }
+#pillows-workspace .pw-space-detail .pw-tabs button { font-size: 14px; }
+#pillows-workspace .pw-room-panel { min-width: 0; border: 1px solid var(--pw-line); border-radius: 10px; background: var(--pw-paper); }
+#pillows-workspace .pw-room-panel > .pw-sectionbar { min-height: 64px; margin: 0; padding: 12px 16px; border-bottom: 1px solid var(--pw-line); }
+#pillows-workspace .pw-room-panel > .pw-sectionbar h2 { font-size: 26px; }
+#pillows-workspace .pw-room-panel > .pw-sectionbar button { min-height: 36px; padding: 7px 10px; font-size: 14px; }
+#pillows-workspace .pw-room-panel > .pw-sectionbar > span { font-size: 14px; }
+#pillows-workspace .pw-room-panel > .pw-definition { padding: 18px; margin: 0; }
+#pillows-workspace .pw-room-contents .pw-table-wrap { border: 0; border-radius: 0 0 10px 10px; }
+#pillows-workspace .pw-space-detail .pw-table th { padding: 11px 16px; color: var(--pw-muted); }
+#pillows-workspace .pw-space-detail .pw-table td { padding: 12px 16px; }
+#pillows-workspace .pw-space-detail .pw-table .pw-thumb { width: 48px; height: 48px; }
+#pillows-workspace .pw-room-quantity { display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 6px; border-radius: 6px; background: var(--pw-wash); font-size: 16px; font-weight: 700; }
+#pillows-workspace .pw-room-panel .pw-record small { margin-top: 3px; color: var(--pw-muted); }
+#pillows-workspace .pw-room-panel .pw-surface-heading h3 { font-size: 14px; }
+#pillows-workspace .pw-room-panel .pw-surface-heading .link { font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+#pillows-workspace .pw-room-issues { grid-column: 1 / -1; }
+#pillows-workspace .pw-room-issue-list { display: grid; }
+#pillows-workspace .pw-room-issue-list .pw-issue-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 4px 20px; padding: 16px 18px; border: 0; }
+#pillows-workspace .pw-room-issue-list .pw-issue-row + .pw-issue-row { border-top: 1px solid var(--pw-line); }
+#pillows-workspace .pw-room-issue-list .pw-rowtitle { grid-column: 1; justify-content: start; gap: 10px; }
+#pillows-workspace .pw-room-issue-list .pw-rowtitle .link { font-weight: 700; }
+#pillows-workspace .pw-room-issue-list .pw-issue-row p { grid-column: 1; margin: 0; font-size: 14px; }
+#pillows-workspace .pw-room-issue-list .pw-photo-gallery { grid-column: 2; grid-row: 1 / 4; margin: 0; align-self: center; }
+#pillows-workspace .pw-room-issue-list .pw-photo-gallery:has(.pw-photo-expanded) { grid-column: 1 / -1; grid-row: auto; }
+#pillows-workspace .pw-room-issue-list .pw-actions { grid-column: 3; grid-row: 1 / 4; flex-direction: column; align-items: stretch; justify-content: center; min-width: 132px; }
+#pillows-workspace .pw-room-issue-list > .pw-definition { padding: 16px 18px; margin: 0; }
+
 /* Responsive adjustments for this stylesheet. */
+
+@media (max-width: 900px) {
+  #pillows-workspace .pw-detail-grid,
+  #pillows-workspace .pw-room-layout { grid-template-columns: minmax(0, 1fr); }
+  #pillows-workspace .pw-contact { border-left: 0; border-top: 1px solid var(--pw-line); padding: 16px 0 0; }
+}
 
 @media (max-width: 850px) {
   #pillows-workspace .pw-overview {
     grid-template-columns: minmax(0, 1.25fr) minmax(230px, 1fr);
   }
-  #pillows-workspace .pw-detail-grid {
-    grid-template-columns: minmax(0, 1.5fr) minmax(200px, 1fr);
-  }
+
 }
 
 @media (max-width: 720px) {
-  #pillows-workspace .pw-room-layout {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
+  #pillows-workspace .pw-room-layout { grid-template-columns: 1fr; gap: 16px; }
+  #pillows-workspace .pw-room-issue-list .pw-issue-row { grid-template-columns: minmax(0, 1fr) auto; }
+  #pillows-workspace .pw-room-issue-list .pw-actions { grid-column: 1 / -1; grid-row: auto; flex-direction: row; justify-content: start; margin-top: 6px; }
 }
 
 @media (max-width: 680px) {
@@ -711,9 +743,12 @@
   #pillows-workspace .pw-room-metrics {
     gap: 12px;
   }
-  #pillows-workspace .pw-surface-meta {
-    padding-left: 43px;
-  }
+  #pillows-workspace .pw-surface-meta { padding-left: 43px; }
+  #pillows-workspace .pw-space-detail .pw-table td,
+  #pillows-workspace .pw-space-detail .pw-table th { padding: 10px; }
+  #pillows-workspace .pw-space-detail .pw-table .pw-thumb { width: 38px; height: 38px; }
+  #pillows-workspace .pw-room-panel > .pw-sectionbar { padding: 12px; }
+  #pillows-workspace .pw-room-panel > .pw-sectionbar h2 { font-size: 24px; }
 }
 
 @media (pointer: coarse) {
@@ -748,7 +783,6 @@
 #pillows-workspace .pw-clickable-row { cursor: pointer; }
 #pillows-workspace .pw-table tbody tr:last-child td { border-bottom: 0; }
 #pillows-workspace .pw-table tbody tr:focus-within { background: var(--pw-wash); }
-#pillows-workspace .pw-surface { margin: 8px 0; padding: 14px; border: 1px solid var(--pw-line); border-radius: 8px; background: var(--pw-wash); }
 @media (max-width: 680px) {
   #pillows-workspace .pw-toolbar { padding: 12px; gap: 12px; }
   #pillows-workspace .pw-toolbar .field { flex: 1 1 130px; }
@@ -767,11 +801,13 @@
 #pillows-workspace .pw-table .action-col .pw-actions { justify-content: flex-end; flex-wrap: nowrap; }
 #pillows-workspace .pw-table .pw-photo-button { width: 38px; height: 38px; }
 #pillows-workspace .pw-table .pw-photo-gallery { margin: 5px 0; }
-#pillows-workspace .pw-room-header-meta { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 8px 20px; margin-bottom: 12px; }
-#pillows-workspace .pw-room-counts { margin: 0; }
+#pillows-workspace .pw-room-header-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; margin-bottom: 10px; }
+#pillows-workspace .pw-room-counts { margin: 0; gap: 8px 16px; }
+#pillows-workspace .pw-room-counts > span + span { border-left: 1px solid var(--pw-line); padding-left: 16px; }
+#pillows-workspace .pw-room-counts .has-issues b { color: var(--pw-alert); }
 #pillows-workspace .pw-room-counts b { font-size: 16px; color: var(--pw-ink); margin-right: 4px; }
 #pillows-workspace .pw-room-details { margin-left: auto; max-width: 520px; font-size: 13px; }
-#pillows-workspace .pw-room-details summary { padding: 0; text-align: right; color: var(--pw-muted); }
+#pillows-workspace .pw-room-details summary { padding: 6px 10px; border: 1px solid var(--pw-line); border-radius: 6px; background: var(--pw-paper); text-align: right; color: var(--pw-ink); font-size: 14px; }
 #pillows-workspace .pw-room-details-content { padding: 12px 14px; margin-top: 8px; border: 1px solid var(--pw-line); border-radius: 6px; background: var(--pw-paper); }
 #pillows-workspace .pw-room-details-content p + p { margin-top: 5px; }
 #pillows-workspace .pw-scope-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; font-size: 13px; padding: 6px 0; }
@@ -781,7 +817,8 @@
   #pillows-workspace .pw-list-toolbar .field.search { flex-basis: 100%; }
   #pillows-workspace .pw-list-toolbar .pw-catalogue-kinds { width: 100%; }
   #pillows-workspace .pw-list-toolbar .pw-catalogue-kinds button { flex: 1; }
-  #pillows-workspace .pw-room-counts { gap: 4px 14px; font-size: 13px; }
+  #pillows-workspace .pw-room-counts { gap: 6px 12px; font-size: 13px; }
+  #pillows-workspace .pw-room-counts > span + span { padding-left: 12px; }
   #pillows-workspace .pw-room-details { margin-left: 0; }
   #pillows-workspace .pw-room-details summary { text-align: left; }
 }

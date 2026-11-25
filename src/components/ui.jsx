@@ -92,13 +92,15 @@ export function Checkbox({ checked, mixed = false, label, onChange }) {
     if (ref.current) ref.current.indeterminate = mixed;
   }, [mixed]);
   return (
-    <input
-      ref={ref}
-      type="checkbox"
-      aria-label={label}
-      checked={checked}
-      onChange={(e) => onChange(e.target.checked)}
-    />
+    <label className="pw-check-target">
+      <input
+        ref={ref}
+        type="checkbox"
+        aria-label={label}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+    </label>
   );
 }
 export function Empty({

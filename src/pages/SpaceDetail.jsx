@@ -22,33 +22,19 @@ export function SpaceDetail() {
   const s = spaceById(data, route.id),
     issues = data.issues.filter((i) => i.spaceId === s.id && isActiveIssue(i));
   return (
-    <>
-      {
-        <Heading
-          title={s.name}
-          subtitle={`${s.type} · ${levelName(s.hotelId, s.floor)} · ${hotels.find((h) => h.id === s.hotelId).name}`}
-          actions={
-            <Button
-              primary
-              onClick={() =>
-                openForm("add", {
-                  spaceIds: [s.id],
-                })
-              }
-            >
-              Add item
-            </Button>
-          }
-        />
-      }
+    <div className="pw-space-detail">
+      <Heading
+        title={s.name}
+        subtitle={`${s.type} · ${levelName(s.hotelId, s.floor)} · ${hotels.find((h) => h.id === s.hotelId).name}`}
+      />
       <div className="pw-room-header-meta">
         <div className="pw-room-counts">
           <span><b>{countObjects(s)}</b> objects</span>
           <span><b>{s.finishes.length}</b> applied finishes</span>
-          <span><b>{issues.length}</b> outstanding {issues.length === 1 ? "issue" : "issues"}</span>
+          <span className={issues.length ? "has-issues" : ""}><b>{issues.length}</b> outstanding {issues.length === 1 ? "issue" : "issues"}</span>
         </div>
         <details className="pw-room-details">
-          <summary>Room details</summary>
+          <summary>Space details</summary>
           <div className="pw-room-details-content">
             <p>{s.verified ? `Verified ${dateLabel(s.verified)}` : "Inventory not yet verified"}</p>
             {s.sourceDrawing && <>
@@ -84,18 +70,19 @@ export function SpaceDetail() {
             }))
           }
         >
-          Room history
+          Space history
         </Button>
       </div>
       {route.tab === "history" ? (
         <HistoryTable rows={data.history.filter((e) => e.spaceId === s.id)} />
       ) : (
         <div className="pw-room-layout">
-          <section>
+          <section className="pw-room-panel pw-room-contents">
             <div className="pw-sectionbar">
               <h2>Current contents</h2>
+              <Button onClick={() => openForm("add", { spaceIds: [s.id] })}>Add item</Button>
             </div>
-            <Table
+            {countObjects(s) > 0 ? <Table
               label={`${labelSpace(s)} contents`}
               head={[
                 "Item",
@@ -113,15 +100,15 @@ export function SpaceDetail() {
                     <td>
                       <ProductRecord id={id} onOpen={openProduct} />
                     </td>
-                    <td className="num">{n}</td>
+                    <td className="num"><span className="pw-room-quantity">{n}</span></td>
                     <td className="action-col">
                       <InventoryActions productId={id} spaceIds={[s.id]} />
                     </td>
                   </tr>
                 ))}
-            </Table>
+            </Table> : <p className="pw-definition">No items recorded yet.</p>}
           </section>
-          <section>
+          <section className="pw-room-panel pw-room-finishes">
             <div className="pw-sectionbar">
               <h2>Paint & finishes</h2>
               <Button onClick={() => visit({ page: "finish", spaceId: s.id })}>
@@ -175,10 +162,13 @@ export function SpaceDetail() {
                 </div>
               );
             })}
-            <div className="pw-subsection">
-              <div className="pw-sectionbar">
-                <h3>Outstanding issues</h3>
-              </div>
+          </section>
+          <section className="pw-room-panel pw-room-issues">
+            <div className="pw-sectionbar">
+              <h2>Outstanding issues</h2>
+              <span className="pw-muted">{issues.length} {issues.length === 1 ? "issue" : "issues"}</span>
+            </div>
+            <div className="pw-room-issue-list">
               {issues.length ? (
                 issues.map((issue) => (
                   <IssueCard key={issue.id} issue={issue} />
@@ -190,6 +180,6 @@ export function SpaceDetail() {
           </section>
         </div>
       )}
-    </>
+    </div>
   );
 }
